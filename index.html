@@ -17,7 +17,7 @@
             --text: #e0e0e0;
             --text2: #888;
             --text3: #555;
-            --green: #00ff9d;
+            --green: #418fde;
             --yellow: #ffd700;
             --cyan: #00ffff;
             --pink: #ff6b9d;
@@ -88,13 +88,10 @@
             width: 42px; height: 42px;
             border: 2px solid var(--border);
             background: var(--bg3);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 700;
-            font-size: 14px;
             cursor: pointer;
             transition: all 0.2s;
+            object-fit: cover;
+            border-radius: 50%;
         }
 
         .portrait:hover { transform: translateY(-2px); }
@@ -106,7 +103,7 @@
             50% { box-shadow: 0 0 15px 3px currentColor; }
         }
 
-        .portrait.abdi { color: var(--green); border-color: var(--green); }
+        .portrait.abdi { color: #418fde; border-color: #418fde; }
         .portrait.fatima { color: var(--pink); border-color: var(--pink); }
         .portrait.mohamed { color: var(--yellow); border-color: var(--yellow); }
         .portrait.abdul { color: var(--blue); border-color: var(--blue); }
@@ -219,9 +216,29 @@
             padding: 15px;
             background: var(--bg2);
             border-left: 3px solid var(--border);
+            display: flex;
+            gap: 15px;
         }
 
-        .message.abdi { border-left-color: var(--green); }
+        .msg-avatar {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            object-fit: cover;
+            flex-shrink: 0;
+            border: 2px solid var(--border);
+        }
+
+        .message.abdi .msg-avatar { border-color: #418fde; }
+        .message.fatima .msg-avatar { border-color: var(--pink); }
+        .message.mohamed .msg-avatar { border-color: var(--yellow); }
+        .message.abdul .msg-avatar { border-color: var(--blue); }
+        .message.hodan .msg-avatar { border-color: var(--purple); }
+
+        .msg-body { flex: 1; min-width: 0; }
+
+        .message.abdi { border-left-color: #418fde; }
+        .message.abdi .msg-speaker { color: #418fde; }
         .message.fatima { border-left-color: var(--pink); }
         .message.mohamed { border-left-color: var(--yellow); }
         .message.abdul { border-left-color: var(--blue); }
@@ -230,7 +247,6 @@
         .msg-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
         .msg-speaker { font-weight: 700; font-size: 13px; }
 
-        .message.abdi .msg-speaker { color: var(--green); }
         .message.fatima .msg-speaker { color: var(--pink); }
         .message.mohamed .msg-speaker { color: var(--yellow); }
         .message.abdul .msg-speaker { color: var(--blue); }
@@ -336,12 +352,9 @@
         .entity-avatar {
             width: 70px; height: 70px;
             border: 2px solid;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            font-weight: 700;
             flex-shrink: 0;
+            border-radius: 50%;
+            object-fit: cover;
         }
 
         .entity-info { flex: 1; }
@@ -426,9 +439,9 @@
         <header class="header">
             <div class="portraits">
                 <div class="portrait-wrap">
-                    <div class="portrait abdi" id="portrait-abdi">AB</div>
+                    <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd896c6ad9a647a21_man.png" class="portrait abdi" id="portrait-abdi" alt="Abdi">
                     <div class="portrait-stats">
-                        <div class="stat-header" style="color:var(--green)">ABDI</div>
+                        <div class="stat-header" style="color:#418fde">ABDI</div>
                         <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="abdi-msg">0</span></div>
                         <div class="stat-row"><span class="stat-label">Conspiracy Level:</span><span class="stat-value" id="abdi-s1">45.0%</span></div>
                         <div class="stat-row"><span class="stat-label">Gov Watchlist:</span><span class="stat-value" id="abdi-s2">Probably</span></div>
@@ -437,7 +450,7 @@
                     </div>
                 </div>
                 <div class="portrait-wrap">
-                    <div class="portrait fatima" id="portrait-fatima">FA</div>
+                    <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd67474aee2da6416_woman1.png" class="portrait fatima" id="portrait-fatima" alt="Fatima">
                     <div class="portrait-stats">
                         <div class="stat-header" style="color:var(--pink)">FATIMA</div>
                         <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="fatima-msg">0</span></div>
@@ -448,7 +461,7 @@
                     </div>
                 </div>
                 <div class="portrait-wrap">
-                    <div class="portrait mohamed" id="portrait-mohamed">MO</div>
+                    <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babf47a70cd09aebaa2_man1.png" class="portrait mohamed" id="portrait-mohamed" alt="Mohamed">
                     <div class="portrait-stats">
                         <div class="stat-header" style="color:var(--yellow)">MOHAMED</div>
                         <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="mohamed-msg">0</span></div>
@@ -459,7 +472,7 @@
                     </div>
                 </div>
                 <div class="portrait-wrap">
-                    <div class="portrait abdul" id="portrait-abdul">AD</div>
+                    <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac4ec3f7d7d07e7b19_man3.png" class="portrait abdul" id="portrait-abdul" alt="Abdul">
                     <div class="portrait-stats">
                         <div class="stat-header" style="color:var(--blue)">ABDUL</div>
                         <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="abdul-msg">0</span></div>
@@ -470,7 +483,7 @@
                     </div>
                 </div>
                 <div class="portrait-wrap">
-                    <div class="portrait hodan" id="portrait-hodan">HO</div>
+                    <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac6bee72833bde3f1e_woman2.png" class="portrait hodan" id="portrait-hodan" alt="Hodan">
                     <div class="portrait-stats">
                         <div class="stat-header" style="color:var(--purple)">HODAN</div>
                         <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="hodan-msg">0</span></div>
@@ -631,13 +644,22 @@
             }
         }
 
+        const charImages = {
+            abdi: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd896c6ad9a647a21_man.png',
+            fatima: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd67474aee2da6416_woman1.png',
+            mohamed: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babf47a70cd09aebaa2_man1.png',
+            abdul: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac4ec3f7d7d07e7b19_man3.png',
+            hodan: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac6bee72833bde3f1e_woman2.png'
+        };
+
         function renderMsgs(msgs) {
             const el = document.getElementById('messages');
             const w = document.getElementById('welcome');
             if(w) w.remove();
             el.innerHTML = msgs.map(m => {
                 const k = m.speakerKey || m.speaker.toLowerCase();
-                return `<div class="message ${k}"><div class="msg-header"><span class="msg-speaker">${m.speaker}</span><span class="msg-time">${formatTime(m.timestamp)}</span></div><div class="msg-content">${formatContent(m.content)}</div></div>`;
+                const img = charImages[k] || '';
+                return `<div class="message ${k}"><img src="${img}" class="msg-avatar" alt="${m.speaker}"><div class="msg-body"><div class="msg-header"><span class="msg-speaker">${m.speaker}</span><span class="msg-time">${formatTime(m.timestamp)}</span></div><div class="msg-content">${formatContent(m.content)}</div></div></div>`;
             }).join('');
             el.scrollTop = el.scrollHeight;
         }
@@ -693,15 +715,15 @@
 
         window.showProfiles = function() {
             const profiles = [
-                {k:'abdi',n:'ABDI',c:'--green',r:'The Conspiracy Theorist',b:'24 years old. Works at Little Stars Daycare in Cedar-Riverside. Convinced the Backrooms are a government project. Always connecting dots that may or may not exist. Paranoid but lovable.'},
-                {k:'fatima',n:'FATIMA',c:'--pink',r:'The Voice of Reason',b:'26 years old. Works at Sunrise Kids Academy in Brooklyn Park. The practical one who keeps everyone grounded. Deeply spiritual, says "astaghfirullah" approximately 47 times per conversation. Will roast you if you deserve it.'},
-                {k:'mohamed',n:'MOHAMED',c:'--yellow',r:'The Philosopher',b:'25 years old. Works at Noor Learning Center in Burnsville. Studied philosophy at community college before switching to early childhood education. Questions everything - existence, reality, why the Backrooms exist.'},
-                {k:'abdul',n:'ABDUL',c:'--blue',r:'The Joker',b:'23 years old. Works at Happy Days Childcare in Richfield. Copes with existential terror through humor. Makes jokes even when terrified (which is always). Has hot takes on everything. Chaotic but everyone loves him.'},
-                {k:'hodan',n:'HODAN',c:'--purple',r:'The Artist',b:'22 years old. Works at Barwaaqo Child Development in St. Paul. Finds beauty in the eerie fluorescent halls. Creates elaborate ASCII art. Dreamy but surprisingly savage with comebacks.'}
+                {k:'abdi',n:'ABDI',c:'#418fde',img:charImages.abdi,r:'The Conspiracy Theorist',b:'24 years old. Works at Little Stars Daycare in Cedar-Riverside. Convinced the Backrooms are a government project. Always connecting dots that may or may not exist. Paranoid but lovable.'},
+                {k:'fatima',n:'FATIMA',c:'var(--pink)',img:charImages.fatima,r:'The Voice of Reason',b:'26 years old. Works at Sunrise Kids Academy in Brooklyn Park. The practical one who keeps everyone grounded. Deeply spiritual, says "astaghfirullah" approximately 47 times per conversation. Will roast you if you deserve it.'},
+                {k:'mohamed',n:'MOHAMED',c:'var(--yellow)',img:charImages.mohamed,r:'The Philosopher',b:'25 years old. Works at Noor Learning Center in Burnsville. Studied philosophy at community college before switching to early childhood education. Questions everything - existence, reality, why the Backrooms exist.'},
+                {k:'abdul',n:'ABDUL',c:'var(--blue)',img:charImages.abdul,r:'The Joker',b:'23 years old. Works at Happy Days Childcare in Richfield. Copes with existential terror through humor. Makes jokes even when terrified (which is always). Has hot takes on everything. Chaotic but everyone loves him.'},
+                {k:'hodan',n:'HODAN',c:'var(--purple)',img:charImages.hodan,r:'The Artist',b:'22 years old. Works at Barwaaqo Child Development in St. Paul. Finds beauty in the eerie fluorescent halls. Creates elaborate ASCII art. Dreamy but surprisingly savage with comebacks.'}
             ];
             document.getElementById('modal-content').innerHTML=`
                 <div class="modal-header"><h2 class="modal-title">ENTITY PROFILES</h2><p class="modal-subtitle">Daycare Workers Trapped in the Somali Backrooms</p></div>
-                ${profiles.map(p=>`<div class="entity-card"><div class="entity-avatar" style="color:var(${p.c});border-color:var(${p.c})">${p.n.slice(0,2)}</div><div class="entity-info"><div class="entity-name" style="color:var(${p.c})">${p.n}</div><div class="entity-role">${p.r}</div><div class="entity-bio">${p.b}</div><div class="entity-status">STATUS: Active | LOCATION: Variable | SIGNAL: Strong</div></div></div>`).join('')}
+                ${profiles.map(p=>`<div class="entity-card"><img src="${p.img}" class="entity-avatar" style="border-color:${p.c}"><div class="entity-info"><div class="entity-name" style="color:${p.c}">${p.n}</div><div class="entity-role">${p.r}</div><div class="entity-bio">${p.b}</div><div class="entity-status">STATUS: Active | LOCATION: Variable | SIGNAL: Strong</div></div></div>`).join('')}
                 <div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>
             `;
             document.getElementById('modal').classList.add('active');
