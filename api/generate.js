@@ -151,7 +151,7 @@ Respond as ${character.name}. Keep it SHORT - 2-4 sentences max unless you're ma
           'X-Title': 'Somali Backrooms'
         },
         body: JSON.stringify({
-          model: 'anthropic/claude-sonnet-4',
+          model: 'deepseek/deepseek-chat',
           max_tokens: 400,
           temperature: 0.85,
           messages: [{ role: 'user', content: prompt }]
