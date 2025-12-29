@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Somali Backrooms</title>
+    <link rel="icon" type="image/png" href="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521223cd57524bbccc1a54_backrooms.png">
+    <link rel="apple-touch-icon" href="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521223cd57524bbccc1a54_backrooms.png">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -496,7 +498,7 @@
             </div>
 
             <div class="header-center">
-                <h1 class="title">SOMALI BACKROOMS</h1>
+                <h1 class="title"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521223cd57524bbccc1a54_backrooms.png" alt="Logo" style="width:24px;height:24px;vertical-align:middle;margin-right:10px;">SOMALI BACKROOMS</h1>
                 <p class="subtitle">Global conversation stream - synchronized across all users</p>
                 <nav class="nav">
                     <a class="nav-link active" id="nav-live" onclick="showLive()">Live Feed</a>
@@ -508,8 +510,8 @@
             </div>
 
             <div class="header-right">
-                <a href="#" class="social-btn">X Twitter</a>
-                <a href="#" class="social-btn">GitHub</a>
+                <a href="https://x.com" target="_blank" class="social-btn"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" alt="X" style="width:14px;height:14px;margin-right:6px;">X Twitter</a>
+                <a href="https://github.com" target="_blank" class="social-btn"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/695210c0d3e337d888a3a407_githu.png" alt="GitHub" style="width:14px;height:14px;margin-right:6px;">GitHub</a>
             </div>
         </header>
 
@@ -534,7 +536,7 @@
                 <div class="dot connecting" id="dot"></div>
                 <span id="status-text">CONNECTING...</span>
             </div>
-            <div class="footer-center">ENTITIES: 5 | LOCATION: UNKNOWN | NEXT MSG: <span id="next-msg">--:--</span></div>
+            <div class="footer-center">ENTITIES: 5 | LOCATION: UNKNOWN | LAUNDERED: <span id="money-counter" style="color:#418fde;font-weight:700;">$110,000,000</span></div>
             <div class="footer-right"><span class="warning" id="reality">REALITY INTEGRITY: CALCULATING...</span></div>
         </footer>
     </div>
@@ -557,22 +559,54 @@
             appId: "1:49496343380:web:adc11ec36066694a783ec1"
         };
 
-        let db, convRef, statsRef, genInterval;
+        let db, convRef, statsRef, genInterval, refreshInterval;
         let view = 'live';
+        let lastMsgCount = 0;
         const chars = ['abdi','fatima','mohamed','abdul','hodan'];
 
         async function init() {
+            // Load data immediately via API first
+            try {
+                const res = await fetch('/api/conversation');
+                const data = await res.json();
+                handleData(data);
+                lastMsgCount = data.messages?.length || 0;
+            } catch(e) { console.log('Initial load failed, waiting for Firebase'); }
+
             try {
                 const app = initializeApp(firebaseConfig);
                 db = getDatabase(app);
                 convRef = ref(db, 'somali-backrooms/conversation');
                 statsRef = ref(db, 'somali-backrooms/stats');
 
-                onValue(convRef, snap => { if(view==='live') handleData(snap.val()); });
+                onValue(convRef, snap => { 
+                    if(view==='live') {
+                        const data = snap.val();
+                        if(data) {
+                            handleData(data);
+                            lastMsgCount = data.messages?.length || 0;
+                        }
+                    }
+                });
                 onValue(statsRef, snap => { if(snap.val()) updateStats(snap.val()); });
 
                 setStatus('connected', 'CONNECTED TO GLOBAL STREAM');
                 startGen();
+                
+                // Also poll every 3 seconds as backup for live updates
+                refreshInterval = setInterval(async()=>{
+                    if(view==='live') {
+                        try {
+                            const res = await fetch('/api/conversation');
+                            const data = await res.json();
+                            if(data.messages?.length !== lastMsgCount) {
+                                handleData(data);
+                                lastMsgCount = data.messages?.length || 0;
+                            }
+                        } catch(e) {}
+                    }
+                }, 3000);
+                
             } catch(e) {
                 console.error(e);
                 setStatus('error', 'CONNECTION FAILED');
@@ -585,7 +619,7 @@
                 const res = await fetch('/api/conversation');
                 handleData(await res.json());
                 setStatus('connected', 'CONNECTED (API MODE)');
-                setInterval(async()=>{ if(view==='live') handleData(await(await fetch('/api/conversation')).json()); }, 5000);
+                setInterval(async()=>{ if(view==='live') handleData(await(await fetch('/api/conversation')).json()); }, 3000);
                 setInterval(async()=>{ const r=await fetch('/api/stats'); updateStats((await r.json()).stats); }, 10000);
                 startGen();
             } catch(e) { setStatus('error', 'CONNECTION FAILED'); }
@@ -682,9 +716,28 @@
         function formatTime(t) { return t ? new Date(t).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '--:--'; }
         function timeAgo(t) { const s=Math.floor((Date.now()-t)/1000); if(s<60)return'Just now'; if(s<3600)return Math.floor(s/60)+'m ago'; if(s<86400)return Math.floor(s/3600)+'h ago'; return Math.floor(s/86400)+'d ago'; }
 
+        // Money counter - starts at $110M, increases $480k/day from a fixed start date
+        function startMoneyCounter() {
+            const startDate = new Date('2025-01-01T00:00:00Z').getTime(); // Fixed start date
+            const startAmount = 110000000; // $110M
+            const dailyIncrease = 480000; // $480k per day
+            const perSecond = dailyIncrease / 86400; // Amount per second
+            
+            function updateCounter() {
+                const now = Date.now();
+                const secondsElapsed = (now - startDate) / 1000;
+                const currentAmount = startAmount + (secondsElapsed * perSecond);
+                document.getElementById('money-counter').textContent = '$' + Math.floor(currentAmount).toLocaleString();
+            }
+            
+            updateCounter();
+            setInterval(updateCounter, 50); // Update rapidly for smooth counting effect
+        }
+
         function startGen() {
             setTimeout(()=>fetch('/api/generate',{method:'POST'}), 5000);
             genInterval = setInterval(()=>fetch('/api/generate',{method:'POST'}), 20000);
+            startMoneyCounter();
         }
 
         window.showLive = function() {
@@ -715,15 +768,15 @@
 
         window.showProfiles = function() {
             const profiles = [
-                {k:'abdi',n:'ABDI',c:'#418fde',img:charImages.abdi,r:'The Conspiracy Theorist',b:'24 years old. Works at Little Stars Daycare in Cedar-Riverside. Convinced the Backrooms are a government project. Always connecting dots that may or may not exist. Paranoid but lovable.'},
-                {k:'fatima',n:'FATIMA',c:'var(--pink)',img:charImages.fatima,r:'The Voice of Reason',b:'26 years old. Works at Sunrise Kids Academy in Brooklyn Park. The practical one who keeps everyone grounded. Deeply spiritual, says "astaghfirullah" approximately 47 times per conversation. Will roast you if you deserve it.'},
-                {k:'mohamed',n:'MOHAMED',c:'var(--yellow)',img:charImages.mohamed,r:'The Philosopher',b:'25 years old. Works at Noor Learning Center in Burnsville. Studied philosophy at community college before switching to early childhood education. Questions everything - existence, reality, why the Backrooms exist.'},
-                {k:'abdul',n:'ABDUL',c:'var(--blue)',img:charImages.abdul,r:'The Joker',b:'23 years old. Works at Happy Days Childcare in Richfield. Copes with existential terror through humor. Makes jokes even when terrified (which is always). Has hot takes on everything. Chaotic but everyone loves him.'},
-                {k:'hodan',n:'HODAN',c:'var(--purple)',img:charImages.hodan,r:'The Artist',b:'22 years old. Works at Barwaaqo Child Development in St. Paul. Finds beauty in the eerie fluorescent halls. Creates elaborate ASCII art. Dreamy but surprisingly savage with comebacks.'}
+                {k:'abdi',n:'ABDI',c:'#418fde',img:charImages.abdi,r:'The Boss - 26',b:'The mastermind behind Minnesota\'s fake daycare empire. Smart, calculated, always three steps ahead. Runs the money laundering operation with his mother Hodan. Paranoid about feds and auditors.'},
+                {k:'fatima',n:'FATIMA',c:'var(--pink)',img:charImages.fatima,r:'Right Hand - 33',b:'Abdi\'s most trusted operator. Handles paperwork, fake attendance records, and keeps the operation looking legit. Practical, sharp, says "astaghfirullah" when stressed.'},
+                {k:'mohamed',n:'MOHAMED',c:'var(--yellow)',img:charImages.mohamed,r:'The Diversity Hire - 25',b:'Albino Somali hired because they needed "white diversity" for appearances. Philosophy student who questions the morality of it all but needs the money. The conscience of the group.'},
+                {k:'abdul',n:'ABDUL',c:'var(--blue)',img:charImages.abdul,r:'The Cleaner - 47',b:'Handles problems. Makes things disappear. 47 years old with stories he\'ll never tell. Uses dark humor to cope. Loyal to Abdi and Hodan. Don\'t cross him.'},
+                {k:'hodan',n:'HODAN',c:'var(--purple)',img:charImages.hodan,r:'The Mother - 67',b:'Abdi\'s 67-year-old mother who helped start the empire. Old school, wise, ruthless. Gives advice from the old country about avoiding authorities. Proud of her son\'s "business."'}
             ];
             document.getElementById('modal-content').innerHTML=`
-                <div class="modal-header"><h2 class="modal-title">ENTITY PROFILES</h2><p class="modal-subtitle">Daycare Workers Trapped in the Somali Backrooms</p></div>
-                ${profiles.map(p=>`<div class="entity-card"><img src="${p.img}" class="entity-avatar" style="border-color:${p.c}"><div class="entity-info"><div class="entity-name" style="color:${p.c}">${p.n}</div><div class="entity-role">${p.r}</div><div class="entity-bio">${p.b}</div><div class="entity-status">STATUS: Active | LOCATION: Variable | SIGNAL: Strong</div></div></div>`).join('')}
+                <div class="modal-header"><h2 class="modal-title">ENTITY PROFILES</h2><p class="modal-subtitle">The Minnesota Daycare Operation</p></div>
+                ${profiles.map(p=>`<div class="entity-card"><img src="${p.img}" class="entity-avatar" style="border-color:${p.c}"><div class="entity-info"><div class="entity-name" style="color:${p.c}">${p.n}</div><div class="entity-role">${p.r}</div><div class="entity-bio">${p.b}</div><div class="entity-status">STATUS: Active | LOCATION: Undisclosed | SIGNAL: Encrypted</div></div></div>`).join('')}
                 <div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>
             `;
             document.getElementById('modal').classList.add('active');
