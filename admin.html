@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Somali Backrooms - Admin Panel</title>
+    <link rel="icon" type="image/png" href="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521223cd57524bbccc1a54_backrooms.png">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        :root { --bg: #0a0a0a; --bg2: #111; --bg3: #1a1a1a; --border: #2a2a2a; --border2: #3a3a3a; --text: #e0e0e0; --text2: #888; --text3: #555; --green: #418fde; --yellow: #ffd700; --red: #ff4444; }
+        body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; min-height: 100vh; padding: 20px; }
+        .container { max-width: 900px; margin: 0 auto; }
+        .header { text-align: center; margin-bottom: 30px; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
+        .title { font-size: 24px; color: var(--green); text-shadow: 0 0 20px rgba(65,143,222,0.5); margin-bottom: 5px; }
+        .subtitle { color: var(--text2); font-size: 12px; }
+        .section { background: var(--bg2); border: 1px solid var(--border); padding: 20px; margin-bottom: 20px; }
+        .section-title { color: var(--yellow); font-size: 14px; font-weight: 600; margin-bottom: 15px; }
+        .form-group { margin-bottom: 15px; }
+        .form-label { display: block; color: var(--text2); margin-bottom: 5px; font-size: 11px; }
+        textarea, input[type="text"], input[type="password"] { width: 100%; background: var(--bg); border: 1px solid var(--border); color: var(--text); padding: 10px; font-family: inherit; font-size: 12px; resize: vertical; }
+        textarea:focus, input:focus { outline: none; border-color: var(--green); }
+        textarea { min-height: 100px; }
+        .btn { background: var(--bg3); border: 1px solid var(--green); color: var(--green); padding: 10px 20px; font-family: inherit; font-size: 12px; cursor: pointer; transition: all 0.2s; margin-right: 10px; margin-top: 10px; }
+        .btn:hover { background: var(--green); color: var(--bg); }
+        .btn.danger { border-color: var(--red); color: var(--red); }
+        .btn.danger:hover { background: var(--red); color: var(--bg); }
+        .status { padding: 10px; margin-top: 10px; font-size: 11px; }
+        .status.success { background: rgba(65,143,222,0.1); border: 1px solid var(--green); color: var(--green); }
+        .status.error { background: rgba(255,68,68,0.1); border: 1px solid var(--red); color: var(--red); }
+        .current-context { background: var(--bg); padding: 15px; border: 1px solid var(--border); margin-top: 15px; font-size: 11px; white-space: pre-wrap; max-height: 200px; overflow-y: auto; }
+        .event-list { margin-top: 15px; }
+        .event-item { background: var(--bg); padding: 10px; border: 1px solid var(--border); margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+        .event-text { flex: 1; font-size: 11px; }
+        .event-remove { color: var(--red); cursor: pointer; font-size: 14px; margin-left: 10px; }
+        .event-remove:hover { color: #ff6666; }
+        .quick-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--text2); padding: 6px 12px; font-size: 10px; cursor: pointer; margin: 3px; font-family: inherit; }
+        .quick-btn:hover { border-color: var(--green); color: var(--green); }
+        .back-link { color: var(--green); text-decoration: none; font-size: 12px; }
+        .back-link:hover { text-decoration: underline; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🔒 ADMIN PANEL</h1>
+            <p class="subtitle">Somali Backrooms Control Center</p>
+            <a href="/" class="back-link">← Back to Live Feed</a>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📢 INJECT BREAKING NEWS / EVENT</div>
+            <p style="color: var(--text2); font-size: 11px; margin-bottom: 15px;">Add context that all characters will know about and can reference in their conversations.</p>
+            
+            <div class="form-group">
+                <label class="form-label">NEW EVENT / CONTEXT</label>
+                <textarea id="new-event" placeholder="e.g., The $SOMALI coin just launched on pump.fun! Contract: ABC123... The crew is excited about their new crypto venture."></textarea>
+            </div>
+            
+            <div style="margin-bottom: 15px;">
+                <span style="color: var(--text2); font-size: 10px;">QUICK ADD:</span><br>
+                <button class="quick-btn" onclick="quickAdd('coin')">🪙 Coin Launch</button>
+                <button class="quick-btn" onclick="quickAdd('raid')">🚨 Fed Raid Nearby</button>
+                <button class="quick-btn" onclick="quickAdd('news')">📺 News Coverage</button>
+                <button class="quick-btn" onclick="quickAdd('money')">💰 Big Deposit</button>
+                <button class="quick-btn" onclick="quickAdd('inspector')">🔍 Inspector Coming</button>
+            </div>
+            
+            <button class="btn" onclick="addEvent()">ADD EVENT</button>
+            <div id="event-status"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📋 ACTIVE EVENTS / CONTEXT</div>
+            <p style="color: var(--text2); font-size: 11px; margin-bottom: 10px;">These are currently being fed to the AI. Characters will reference these in conversation.</p>
+            <div id="event-list" class="event-list">
+                <div style="color: var(--text3);">Loading...</div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">⚙️ CONVERSATION CONTROLS</div>
+            <button class="btn" onclick="clearConversation()">🗑️ Clear Conversation</button>
+            <button class="btn" onclick="clearArchives()">📁 Clear Archives</button>
+            <button class="btn danger" onclick="clearAll()">⚠️ Factory Reset</button>
+            <div id="control-status"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📊 CURRENT STATE</div>
+            <div id="current-state" class="current-context">Loading...</div>
+        </div>
+    </div>
+
+    <script type="module">
+        import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
+        import { getDatabase, ref, onValue, set, push, remove, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+
+        const firebaseConfig = {
+            apiKey: "AIzaSyBlcRjOSXtzkeDqUHp67PnFkrqirNykVos",
+            authDomain: "somali-backrooms.firebaseapp.com",
+            databaseURL: "https://somali-backrooms-default-rtdb.firebaseio.com",
+            projectId: "somali-backrooms",
+            storageBucket: "somali-backrooms.firebasestorage.app",
+            messagingSenderId: "49496343380",
+            appId: "1:49496343380:web:adc11ec36066694a783ec1"
+        };
+
+        const app = initializeApp(firebaseConfig);
+        const db = getDatabase(app);
+
+        // Load current state
+        function loadState() {
+            onValue(ref(db, 'somali-backrooms'), (snapshot) => {
+                const data = snapshot.val() || {};
+                document.getElementById('current-state').textContent = JSON.stringify({
+                    messageCount: data.conversation?.messages?.length || 0,
+                    currentSpeaker: ['abdi','fatima','mohamed','abdul','hodan'][data.conversation?.currentSpeakerIndex || 0],
+                    isGenerating: data.conversation?.isGenerating || false,
+                    customEventsCount: data.customEvents ? Object.keys(data.customEvents).length : 0,
+                    archivesCount: data.archive ? Object.keys(data.archive).length : 0
+                }, null, 2);
+            });
+        }
+
+        // Load events
+        function loadEvents() {
+            onValue(ref(db, 'somali-backrooms/customEvents'), (snapshot) => {
+                const events = snapshot.val() || {};
+                const container = document.getElementById('event-list');
+                
+                if (Object.keys(events).length === 0) {
+                    container.innerHTML = '<div style="color: var(--text3);">No custom events. Add one above!</div>';
+                    return;
+                }
+
+                container.innerHTML = Object.entries(events).map(([id, event]) => `
+                    <div class="event-item">
+                        <div class="event-text">${event.text}</div>
+                        <span class="event-remove" onclick="removeEvent('${id}')">✕</span>
+                    </div>
+                `).join('');
+            });
+        }
+
+        // Add event
+        window.addEvent = async function() {
+            const text = document.getElementById('new-event').value.trim();
+            if (!text) return;
+
+            try {
+                await push(ref(db, 'somali-backrooms/customEvents'), {
+                    text: text,
+                    addedAt: Date.now()
+                });
+                document.getElementById('new-event').value = '';
+                showStatus('event-status', 'Event added! Characters will now reference this.', 'success');
+            } catch (e) {
+                showStatus('event-status', 'Error: ' + e.message, 'error');
+            }
+        };
+
+        // Remove event
+        window.removeEvent = async function(id) {
+            try {
+                await remove(ref(db, 'somali-backrooms/customEvents/' + id));
+            } catch (e) {
+                alert('Error removing: ' + e.message);
+            }
+        };
+
+        // Quick add templates
+        window.quickAdd = function(type) {
+            const templates = {
+                coin: 'BREAKING: The $SOMALI coin just launched on pump.fun! Contract address: [PASTE_CONTRACT_HERE]. The crew is hyped about their new crypto venture to "legitimize" the operation.',
+                raid: 'ALERT: FBI just raided a daycare operation in St. Paul. The crew is on high alert and paranoid about being next.',
+                news: 'Local news channel is running a story about suspicious daycare centers in Minnesota. Everyone is watching the TV nervously.',
+                money: 'A massive cash deposit just came through - $500k in unmarked bills. Time to celebrate but also be extra careful.',
+                inspector: 'State inspector scheduled to visit tomorrow. Everyone is scrambling to make things look legit.'
+            };
+            document.getElementById('new-event').value = templates[type] || '';
+        };
+
+        // Clear conversation
+        window.clearConversation = async function() {
+            if (!confirm('Clear all messages? This cannot be undone.')) return;
+            try {
+                await set(ref(db, 'somali-backrooms/conversation'), {
+                    messages: [],
+                    currentSpeakerIndex: 0,
+                    messageCount: 0,
+                    isGenerating: false,
+                    lastMessageTime: 0,
+                    createdAt: Date.now()
+                });
+                showStatus('control-status', 'Conversation cleared!', 'success');
+            } catch (e) {
+                showStatus('control-status', 'Error: ' + e.message, 'error');
+            }
+        };
+
+        // Clear archives
+        window.clearArchives = async function() {
+            if (!confirm('Clear all archives? This cannot be undone.')) return;
+            try {
+                await set(ref(db, 'somali-backrooms/archive'), {});
+                showStatus('control-status', 'Archives cleared!', 'success');
+            } catch (e) {
+                showStatus('control-status', 'Error: ' + e.message, 'error');
+            }
+        };
+
+        // Factory reset
+        window.clearAll = async function() {
+            if (!confirm('FACTORY RESET: This will delete EVERYTHING. Are you sure?')) return;
+            if (!confirm('Really sure? All messages, archives, events, stats - GONE.')) return;
+            try {
+                await set(ref(db, 'somali-backrooms'), {
+                    conversation: {
+                        messages: [],
+                        currentSpeakerIndex: 0,
+                        messageCount: 0,
+                        isGenerating: false,
+                        lastMessageTime: 0,
+                        createdAt: Date.now()
+                    },
+                    stats: {},
+                    archive: {},
+                    customEvents: {}
+                });
+                showStatus('control-status', 'Factory reset complete!', 'success');
+            } catch (e) {
+                showStatus('control-status', 'Error: ' + e.message, 'error');
+            }
+        };
+
+        function showStatus(id, msg, type) {
+            const el = document.getElementById(id);
+            el.innerHTML = `<div class="status ${type}">${msg}</div>`;
+            setTimeout(() => el.innerHTML = '', 5000);
+        }
+
+        loadState();
+        loadEvents();
+    </script>
+</body>
+</html>

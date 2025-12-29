@@ -119,12 +119,14 @@
         .infra-box { background: var(--bg2); border: 1px solid var(--border); padding: 15px; }
         .infra-title { font-weight: 600; margin-bottom: 10px; font-size: 12px; }
         .infra-list { font-size: 11px; color: var(--text2); line-height: 1.8; }
-        .archive-item { background: var(--bg2); border: 1px solid var(--border); padding: 15px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
-        .archive-item:hover { border-color: var(--border2); background: var(--bg3); }
-        .archive-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
-        .archive-date { color: var(--cyan); font-size: 12px; }
+        .archive-item { background: var(--bg2); border: 1px solid var(--border); padding: 15px; margin-bottom: 10px; transition: all 0.2s; }
+        .archive-item:hover { border-color: var(--border2); }
+        .archive-header { display: flex; justify-content: space-between; align-items: center; cursor: pointer; margin-bottom: 8px; }
+        .archive-date { color: var(--cyan); font-size: 12px; margin-right: 15px; }
         .archive-count { color: var(--text2); font-size: 11px; }
-        .archive-preview { color: var(--text2); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .archive-toggle { color: var(--cyan); font-size: 10px; }
+        .archive-preview { color: var(--text3); font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .archive-content { margin-top: 15px; padding-top: 15px; border-top: 1px solid var(--border); max-height: 400px; overflow-y: auto; }
         .loading { text-align: center; padding: 40px; color: var(--text2); }
         .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 10px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
@@ -270,8 +272,72 @@
         function timeAgo(t) { const s=Math.floor((Date.now()-t)/1000); if(s<60)return'Just now'; if(s<3600)return Math.floor(s/60)+'m ago'; if(s<86400)return Math.floor(s/3600)+'h ago'; return Math.floor(s/86400)+'d ago'; }
         function startGen() { setTimeout(()=>fetch('/api/generate',{method:'POST'}), 5000); genInterval = setInterval(()=>fetch('/api/generate',{method:'POST'}), 20000); }
         window.showLive = function() { view='live'; document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active')); document.getElementById('nav-live').classList.add('active'); document.getElementById('messages').innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>'; fetch('/api/conversation').then(r=>r.json()).then(handleData); };
-        window.showArchive = function() { view='archive'; document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active')); document.getElementById('nav-archive').classList.add('active'); document.getElementById('messages').innerHTML='<div class="loading"><span class="spinner"></span>Loading archives...</div>'; fetch('/api/archive').then(r=>r.json()).then(d=>{ const el=document.getElementById('messages'); if(!d.archives?.length){el.innerHTML='<div class="welcome"><div class="welcome-title">NO ARCHIVES YET</div><div class="welcome-text">Conversations are automatically archived every 10 minutes.</div></div>';return;} el.innerHTML=d.archives.map(a=>`<div class="archive-item" onclick="loadArchive('${a.id}')"><div class="archive-header"><span class="archive-date">${new Date(a.archivedAt).toLocaleString()}</span><span class="archive-count">${a.messageCount} messages</span></div><div class="archive-preview">${a.preview || 'No preview'}</div></div>`).join(''); }); };
-        window.loadArchive = async function(id) { document.getElementById('messages').innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>'; const d = await(await fetch('/api/archive?id='+id)).json(); if(d.messages) renderMsgs(d.messages); };
+        window.showArchive = function() { 
+            view='archive'; 
+            document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active')); 
+            document.getElementById('nav-archive').classList.add('active'); 
+            document.getElementById('messages').innerHTML='<div class="loading"><span class="spinner"></span>Loading archives...</div>'; 
+            fetch('/api/archive').then(r=>r.json()).then(d=>{ 
+                const el=document.getElementById('messages'); 
+                if(!d.archives?.length){
+                    el.innerHTML='<div class="welcome"><div class="welcome-title">NO ARCHIVES YET</div><div class="welcome-text">Conversations are automatically archived every 10 minutes. Check back soon!</div></div>';
+                    return;
+                } 
+                el.innerHTML='<div style="padding:10px 0;color:var(--text2);font-size:11px;">📁 '+d.archives.length+' archived conversations - click to expand</div>' + d.archives.map(a=>`
+                    <div class="archive-item" id="archive-${a.id}">
+                        <div class="archive-header" onclick="toggleArchive('${a.id}')">
+                            <div>
+                                <span class="archive-date">${new Date(a.archivedAt).toLocaleString()}</span>
+                                <span class="archive-count">${a.messageCount} messages</span>
+                            </div>
+                            <span class="archive-toggle" id="toggle-${a.id}">▼</span>
+                        </div>
+                        <div class="archive-preview">${(a.preview || 'No preview').substring(0,80)}...</div>
+                        <div class="archive-content" id="content-${a.id}" style="display:none;"></div>
+                    </div>
+                `).join(''); 
+            }); 
+        };
+        window.toggleArchive = async function(id) {
+            const content = document.getElementById('content-'+id);
+            const toggle = document.getElementById('toggle-'+id);
+            if(content.style.display === 'none') {
+                content.style.display = 'block';
+                toggle.textContent = '▲';
+                if(!content.innerHTML) {
+                    content.innerHTML = '<div class="loading"><span class="spinner"></span>Loading...</div>';
+                    const d = await(await fetch('/api/archive?id='+id)).json();
+                    if(d.messages) {
+                        content.innerHTML = d.messages.map(m => {
+                            const k = m.speakerKey || m.speaker.toLowerCase();
+                            const img = charImages[k] || '';
+                            return `<div class="message ${k}" style="margin:10px 0;"><div class="msg-avatar-wrap"><img src="${img}" class="msg-avatar" alt="${m.speaker}"></div><div class="msg-body"><div class="msg-header"><span class="msg-speaker">${m.speaker}</span><span class="msg-time">${formatTime(m.timestamp)}</span></div><div class="msg-content">${formatContent(m.content)}</div></div></div>`;
+                        }).join('');
+                    }
+                }
+            } else {
+                content.style.display = 'none';
+                toggle.textContent = '▼';
+            }
+        };
+        window.loadArchive = async function(id) { 
+            document.getElementById('modal-content').innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
+            document.getElementById('modal').classList.add('active');
+            const d = await(await fetch('/api/archive?id='+id)).json(); 
+            if(d.messages) {
+                document.getElementById('modal-content').innerHTML = `
+                    <div class="modal-header"><h2 class="modal-title">ARCHIVED CONVERSATION</h2><p class="modal-subtitle">${new Date(d.archivedAt).toLocaleString()} - ${d.messages.length} messages</p></div>
+                    <div style="max-height:60vh;overflow-y:auto;">
+                        ${d.messages.map(m => {
+                            const k = m.speakerKey || m.speaker.toLowerCase();
+                            const img = charImages[k] || '';
+                            return `<div class="message ${k}" style="margin:10px 0;"><div class="msg-avatar-wrap"><img src="${img}" class="msg-avatar" alt="${m.speaker}"></div><div class="msg-body"><div class="msg-header"><span class="msg-speaker">${m.speaker}</span><span class="msg-time">${formatTime(m.timestamp)}</span></div><div class="msg-content">${formatContent(m.content)}</div></div></div>`;
+                        }).join('')}
+                    </div>
+                    <div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>
+                `;
+            }
+        };
         window.showProfiles = function() { const profiles = [ {k:'abdi',n:'ABDI',c:'#418fde',img:charImages.abdi,r:'The Boss - 26',b:'The mastermind behind Minnesota\'s fake daycare empire. Smart, calculated, always three steps ahead. Runs the money laundering operation with his mother Hodan.'}, {k:'fatima',n:'FATIMA',c:'var(--pink)',img:charImages.fatima,r:'Right Hand - 33',b:'Abdi\'s most trusted operator. Handles paperwork, fake attendance records, and keeps the operation looking legit.'}, {k:'mohamed',n:'MOHAMED',c:'var(--yellow)',img:charImages.mohamed,r:'The Diversity Hire - 25',b:'Albino Somali hired because they needed "white diversity" for appearances. Philosophy student who questions the morality of it all.'}, {k:'abdul',n:'ABDUL',c:'var(--blue)',img:charImages.abdul,r:'The Cleaner - 47',b:'Handles problems. Makes things disappear. 47 years old with stories he\'ll never tell. Uses dark humor to cope.'}, {k:'hodan',n:'HODAN',c:'var(--purple)',img:charImages.hodan,r:'The Mother - 67',b:'Abdi\'s 67-year-old mother who helped start the empire. Old school, wise, ruthless.'} ]; document.getElementById('modal-content').innerHTML=`<div class="modal-header"><h2 class="modal-title">ENTITY PROFILES</h2><p class="modal-subtitle">The Minnesota Daycare Operation</p></div>${profiles.map(p=>`<div class="entity-card"><img src="${p.img}" class="entity-avatar" style="border-color:${p.c}"><div class="entity-info"><div class="entity-name" style="color:${p.c}">${p.n} <a href="https://x.com/${p.k}" target="_blank"><img src="${twitterIcon}" style="width:14px;height:14px;"></a></div><div class="entity-role">${p.r}</div><div class="entity-bio">${p.b}</div><div class="entity-status">STATUS: Active | LOCATION: Undisclosed | SIGNAL: Encrypted</div></div></div>`).join('')}<div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>`; document.getElementById('modal').classList.add('active'); };
         window.showAbout = function() { document.getElementById('modal-content').innerHTML=`<div class="modal-header"><h2 class="modal-title">SOMALI BACKROOMS PROJECT</h2><p class="modal-subtitle">Raising Awareness About Minnesota Daycare Fraud</p></div><div class="awareness-box"><div class="title">ABOUT THIS PROJECT</div>This site was created to raise awareness about the ongoing issue in Minnesota with fake daycare centers collecting fraudulent payments to run "ghost" daycares. These operations exploit childcare assistance programs, defrauding taxpayers of millions while providing no actual childcare services.<br><br><strong style="color:var(--green)">Dev fees will be directed straight to Nick Shirley's Solana wallet to support his investigative journalism work.</strong><div class="social-links"><a href="https://x.com/nickshirleyy" target="_blank" class="social-link-btn"><img src="${twitterIcon}" alt="X">Nick Shirley on X</a><a href="https://www.youtube.com/@nickshirley" target="_blank" class="social-link-btn"><img src="${youtubeIcon}" alt="YouTube">YouTube Channel</a></div></div><div class="section-text">The Somali Backrooms Project is an AI-driven simulation depicting fictional characters running a fake daycare money laundering operation in Minnesota. Through this satirical lens, we explore the mechanics of how such fraud schemes operate.</div><div class="section-header">TECHNICAL ARCHITECTURE:</div><div class="code-block"><span class="code-comment">// Core Entity Generation Engine</span><br><span class="code-keyword">use</span> <span class="code-type">openrouter_api</span>::{<span class="code-type">Client</span>};<br><span class="code-keyword">use</span> <span class="code-type">firebase_rs</span>::<span class="code-type">Firebase</span>;<br><br><span class="code-keyword">let</span> client = <span class="code-type">Client</span>::<span class="code-function">new</span>(env::<span class="code-function">var</span>(<span class="code-string">"OPENROUTER_API_KEY"</span>)?)<br>&nbsp;&nbsp;.<span class="code-function">with_model</span>(<span class="code-string">"anthropic/claude-sonnet-4"</span>);</div><div class="section-header">INFRASTRUCTURE:</div><div class="infra-grid"><div class="infra-box"><div class="infra-title" style="color:var(--pink)">FRONTEND</div><div class="infra-list">Vanilla JS + Firebase SDK<br>Real-time WebSocket listeners<br>CRT shader overlay effects</div></div><div class="infra-box"><div class="infra-title" style="color:var(--blue)">BACKEND</div><div class="infra-list">OpenRouter API<br>Vercel Edge Functions<br>Firebase Realtime Database</div></div></div><div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>`; document.getElementById('modal').classList.add('active'); };
         window.closeModal = function() { document.getElementById('modal').classList.remove('active'); };

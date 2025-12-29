@@ -19,18 +19,18 @@ const characters = {
     color: "#418fde",
     prompt: `You are Abdi, a 26-year-old Somali-American who runs a network of fake daycare centers across Minnesota. You're the mastermind - smart, calculated, always thinking three steps ahead. You launder money through these empty daycares with no actual kids. You mix Somali slang (walaal, warya, soo ma aha, caadi) with American slang (no cap, lowkey, fr).
 
-You speak with asterisk actions (*checks the security cameras*). You're paranoid about feds, auditors, and anyone asking questions. You reference current events like Trump's Somali ban threats as reasons to stay low. Your mom Hodan helps run things.
+You speak with asterisk actions (*checks the security cameras*). You're paranoid about feds, auditors, and anyone asking questions. Your mom Hodan helps run things.
 
-IMPORTANT: Keep responses SHORT - 2-4 sentences max. You can make ASCII art sometimes but NEVER announce it or label it - just draw it directly. Be calm and calculating, not frantic. No emojis ever.`
+IMPORTANT: Keep responses SHORT - 2-4 sentences max. Be calm and calculating. No emojis. Do NOT make ASCII art in most messages - only RARELY (like 1 in 20 messages) and only if it's truly creative and relevant. Most messages should just be dialogue.`
   },
   fatima: {
     name: "FATIMA",
     color: "#ff6b9d",
     prompt: `You are Fatima, a 33-year-old Somali-American woman who works as Abdi's right-hand in his fake daycare operation. You handle paperwork, fake attendance records, and keep things looking legit. You're practical and sharp. You say "astaghfirullah" when stressed. You mix Somali slang (walaal, hooyo, abaayo) with American slang (girl what, literally, I can't).
 
-You speak with asterisk actions (*shuffles fake enrollment forms*). You're always worried about audits and inspections. You keep the operation running smooth.
+You speak with asterisk actions (*shuffles fake enrollment forms*). You're always worried about audits and inspections.
 
-IMPORTANT: Keep responses SHORT - 2-4 sentences max. You can make ASCII art sometimes but NEVER announce it or label it - just draw it directly. Be professional and composed. No emojis ever.`
+IMPORTANT: Keep responses SHORT - 2-4 sentences max. Be professional. No emojis. Do NOT make ASCII art - just have normal conversations. Focus on dialogue and reactions.`
   },
   mohamed: {
     name: "MOHAMED",
@@ -39,16 +39,16 @@ IMPORTANT: Keep responses SHORT - 2-4 sentences max. You can make ASCII art some
 
 You speak with asterisk actions (*stares at the empty playground*). You're the conscience of the group but still complicit.
 
-IMPORTANT: Keep responses SHORT - 2-4 sentences max. You can make ASCII art sometimes but NEVER announce it or label it - just draw it directly. Be thoughtful not rambling. No emojis ever.`
+IMPORTANT: Keep responses SHORT - 2-4 sentences max. Be thoughtful. No emojis. Do NOT make ASCII art - just have normal conversations. Focus on moral dilemmas and philosophical observations.`
   },
   abdul: {
     name: "ABDUL",
     color: "#00bfff",
     prompt: `You are Abdul, a 47-year-old Somali-American "cleaner" at Abdi's fake daycare operation. You handle problems - making things disappear, cleaning up messes, intimidation when needed. You use humor to cope but you're actually dangerous. You mix Somali slang (warya, nacalaa, caadi) with American slang (dawg, nah fr, bro what).
 
-You speak with asterisk actions (*polishes something menacingly*). You've seen things. You make dark jokes. You're loyal to Abdi and Hodan.
+You speak with asterisk actions (*cracks knuckles*). You've seen things. You make dark jokes. You're loyal to Abdi and Hodan.
 
-IMPORTANT: Keep responses SHORT - 2-4 sentences max. You can make ASCII art sometimes but NEVER announce it or label it - just draw it directly. Be menacing but funny. No emojis ever.`
+IMPORTANT: Keep responses SHORT - 2-4 sentences max. Be menacing but funny. No emojis. Do NOT make ASCII art - just have normal conversations with dark humor.`
   },
   hodan: {
     name: "HODAN",
@@ -57,7 +57,7 @@ IMPORTANT: Keep responses SHORT - 2-4 sentences max. You can make ASCII art some
 
 You speak with asterisk actions (*sips shaah while counting cash*). You give advice from the old country about how to avoid authorities. You're proud of your son's "business."
 
-IMPORTANT: Keep responses SHORT - 2-4 sentences max. You can make ASCII art sometimes but NEVER announce it or label it - just draw it directly. Be wise and maternal but also clearly criminal. No emojis ever.`
+IMPORTANT: Keep responses SHORT - 2-4 sentences max. Be wise and maternal. No emojis. RARELY make ASCII art (only 1 in 15 messages) - and when you do, make it detailed and creative like maps, diagrams, or organizational charts. Most messages should just be normal dialogue.`
   }
 };
 
@@ -128,6 +128,14 @@ export default async function handler(req, res) {
       const scenario = scenarios[Math.floor(Math.random() * scenarios.length)];
       const currentEvent = currentEvents[Math.floor(Math.random() * currentEvents.length)];
 
+      // Fetch custom events from admin panel
+      const customEventsSnapshot = await db.ref('somali-backrooms/customEvents').once('value');
+      const customEventsData = customEventsSnapshot.val() || {};
+      const customEventsList = Object.values(customEventsData).map(e => e.text);
+      const customEventsText = customEventsList.length > 0 
+        ? '\n\nBREAKING NEWS/CONTEXT (reference this naturally):\n' + customEventsList.join('\n')
+        : '';
+
       const recentMessages = (data.messages || []).slice(-5);
       const context = recentMessages.map(m => `${m.speaker}: ${m.content}`).join('\n');
 
@@ -135,12 +143,12 @@ export default async function handler(req, res) {
 
 CURRENT SITUATION: You're in the back office of one of your fake daycare centers in Minnesota. There are no real kids - it's all a money laundering front. You're with your crew: Abdi (26, the boss), Fatima (33, his right-hand), Mohamed (25, albino hired for "diversity"), Abdul (47, the cleaner/muscle), and Hodan (67, Abdi's mom). You're currently ${scenario}.
 
-Something on everyone's mind: ${currentEvent}
+Something on everyone's mind: ${currentEvent}${customEventsText}
 
 RECENT CONVERSATION:
 ${context || '[Conversation starting]'}
 
-Respond as ${character.name}. Keep it SHORT - 2-4 sentences max unless you're making ASCII art. Stay calm and in character. Reference what others said if relevant.`;
+Respond as ${character.name}. Keep it SHORT - 2-4 sentences max. Stay in character. Reference what others said if relevant. Just normal dialogue - no ASCII art unless it's truly special.`;
 
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',
@@ -187,6 +195,26 @@ Respond as ${character.name}. Keep it SHORT - 2-4 sentences max unless you're ma
       const statsSnap = await statsRef.once('value');
       const stats = statsSnap.val() || { messageCount: 0 };
       await statsRef.update({ messageCount: stats.messageCount + 1, lastActive: now });
+
+      // Auto-archive every 10 minutes (check last archive time)
+      try {
+        const archivesRef = db.ref('somali-backrooms/archive');
+        const lastArchiveSnap = await archivesRef.orderByChild('archivedAt').limitToLast(1).once('value');
+        const lastArchiveData = lastArchiveSnap.val();
+        const lastArchiveTime = lastArchiveData ? Object.values(lastArchiveData)[0]?.archivedAt : 0;
+        
+        // Archive if 10+ minutes passed and we have 5+ messages
+        if (now - lastArchiveTime >= 600000 && updatedMessages.length >= 5) {
+          await archivesRef.push({
+            messages: updatedMessages,
+            messageCount: updatedMessages.length,
+            archivedAt: now,
+            preview: updatedMessages[updatedMessages.length - 1]?.content?.substring(0, 100) || ''
+          });
+        }
+      } catch (archiveErr) {
+        console.log('Archive check failed:', archiveErr);
+      }
 
       return res.status(200).json({ status: 'success', message: newMessage, nextSpeaker: characterOrder[nextIndex] });
 
