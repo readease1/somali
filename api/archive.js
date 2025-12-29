@@ -53,33 +53,33 @@ export default async function handler(req, res) {
       return res.status(200).json({ status: 'snapshot saved', messageCount: current.messages.length });
     }
 
-    if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+    // GET - Fetch archives
+    if (req.method === 'GET') {
+      const { id } = req.query;
 
-  try {
-    const { id } = req.query;
+      if (id) {
+        const snapshot = await db.ref(`somali-backrooms/archive/${id}`).once('value');
+        const data = snapshot.val();
+        if (!data) return res.status(404).json({ error: 'Archive not found' });
+        return res.status(200).json(data);
+      }
 
-    if (id) {
-      const snapshot = await db.ref(`somali-backrooms/archive/${id}`).once('value');
+      const snapshot = await db.ref('somali-backrooms/archive').orderByChild('archivedAt').limitToLast(50).once('value');
       const data = snapshot.val();
-      if (!data) return res.status(404).json({ error: 'Archive not found' });
-      return res.status(200).json(data);
+
+      if (!data) return res.status(200).json({ archives: [] });
+
+      const archives = Object.entries(data).map(([id, archive]) => ({
+        id,
+        messageCount: archive.messageCount || archive.messages?.length || 0,
+        archivedAt: archive.archivedAt,
+        preview: archive.messages?.[archive.messages.length - 1]?.content?.substring(0, 100) || 'No preview'
+      })).sort((a, b) => b.archivedAt - a.archivedAt);
+
+      return res.status(200).json({ archives });
     }
 
-    const snapshot = await db.ref('somali-backrooms/archive').orderByChild('archivedAt').limitToLast(50).once('value');
-    const data = snapshot.val();
-
-    if (!data) return res.status(200).json({ archives: [] });
-
-    const archives = Object.entries(data).map(([id, archive]) => ({
-      id,
-      messageCount: archive.messageCount || archive.messages?.length || 0,
-      archivedAt: archive.archivedAt,
-      startTime: archive.startTime,
-      endTime: archive.endTime,
-      preview: archive.messages?.[0]?.content?.substring(0, 100) || 'No preview'
-    })).sort((a, b) => b.archivedAt - a.archivedAt);
-
-    return res.status(200).json({ archives });
+    return res.status(405).json({ error: 'Method not allowed' });
 
   } catch (error) {
     console.error('Archive error:', error);
