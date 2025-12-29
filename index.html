@@ -9,494 +9,204 @@
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
-
-        :root {
-            --bg: #0a0a0a;
-            --bg2: #111;
-            --bg3: #1a1a1a;
-            --border: #2a2a2a;
-            --border2: #3a3a3a;
-            --text: #e0e0e0;
-            --text2: #888;
-            --text3: #555;
-            --green: #418fde;
-            --yellow: #ffd700;
-            --cyan: #00ffff;
-            --pink: #ff6b9d;
-            --purple: #da70d6;
-            --blue: #00bfff;
-            --red: #ff4444;
-        }
-
-        body {
-            background: var(--bg);
-            color: var(--text);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 13px;
-            line-height: 1.5;
-            overflow: hidden;
-            height: 100vh;
-        }
-
-        .scanline {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 2px;
-            background: linear-gradient(90deg, transparent, var(--green), transparent);
-            opacity: 0.3;
-            animation: scan 4s linear infinite;
-            z-index: 9999;
-            pointer-events: none;
-        }
-
-        @keyframes scan {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100vh); }
-        }
-
-        .crt {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: repeating-linear-gradient(0deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 1px, transparent 1px, transparent 2px);
-            pointer-events: none;
-            z-index: 9998;
-        }
-
-        .container {
-            height: 100vh;
-            display: flex;
-            flex-direction: column;
-            background: radial-gradient(ellipse at 50% 0%, rgba(0,255,157,0.03) 0%, transparent 50%), var(--bg);
-        }
-
-        .header {
-            padding: 12px 20px;
-            background: var(--bg2);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            align-items: flex-start;
-        }
-
-        .portraits {
-            display: flex;
-            gap: 8px;
-        }
-
-        .portrait-wrap { position: relative; }
-
-        .portrait {
-            width: 42px; height: 42px;
-            border: 2px solid var(--border);
-            background: var(--bg3);
-            cursor: pointer;
-            transition: all 0.2s;
-            object-fit: cover;
-            border-radius: 50%;
-        }
-
+        :root { --bg: #0a0a0a; --bg2: #111; --bg3: #1a1a1a; --border: #2a2a2a; --border2: #3a3a3a; --text: #e0e0e0; --text2: #888; --text3: #555; --green: #418fde; --yellow: #ffd700; --cyan: #00ffff; --pink: #ff6b9d; --purple: #da70d6; --blue: #00bfff; --red: #ff4444; }
+        body { background: var(--bg); color: var(--text); font-family: 'JetBrains Mono', monospace; font-size: 13px; line-height: 1.5; overflow: hidden; height: 100vh; }
+        .scanline { position: fixed; top: 0; left: 0; width: 100%; height: 2px; background: linear-gradient(90deg, transparent, var(--green), transparent); opacity: 0.3; animation: scan 4s linear infinite; z-index: 9999; pointer-events: none; }
+        @keyframes scan { 0% { transform: translateY(-100%); } 100% { transform: translateY(100vh); } }
+        .crt { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: repeating-linear-gradient(0deg, rgba(0,0,0,0.03) 0px, rgba(0,0,0,0.03) 1px, transparent 1px, transparent 2px); pointer-events: none; z-index: 9998; }
+        .container { height: 100vh; display: flex; flex-direction: column; background: radial-gradient(ellipse at 50% 0%, rgba(65,143,222,0.03) 0%, transparent 50%), var(--bg); }
+        .header { padding: 12px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; }
+        .portraits { display: flex; gap: 8px; }
+        .portrait-wrap { position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .portrait { width: 42px; height: 42px; border: 2px solid var(--border); background: var(--bg3); cursor: pointer; transition: all 0.2s; object-fit: cover; border-radius: 50%; }
         .portrait:hover { transform: translateY(-2px); }
-
         .portrait.speaking { animation: pulse 1.5s ease-in-out infinite; }
-
-        @keyframes pulse {
-            0%, 100% { box-shadow: 0 0 0 0 currentColor; }
-            50% { box-shadow: 0 0 15px 3px currentColor; }
-        }
-
+        @keyframes pulse { 0%, 100% { box-shadow: 0 0 0 0 currentColor; } 50% { box-shadow: 0 0 15px 3px currentColor; } }
         .portrait.abdi { color: #418fde; border-color: #418fde; }
         .portrait.fatima { color: var(--pink); border-color: var(--pink); }
         .portrait.mohamed { color: var(--yellow); border-color: var(--yellow); }
         .portrait.abdul { color: var(--blue); border-color: var(--blue); }
         .portrait.hodan { color: var(--purple); border-color: var(--purple); }
-
-        .portrait-stats {
-            position: absolute;
-            top: calc(100% + 10px);
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg);
-            border: 1px solid var(--border2);
-            padding: 12px 15px;
-            min-width: 200px;
-            z-index: 1000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.2s;
-            font-size: 11px;
-        }
-
-        .portrait-stats::before {
-            content: '';
-            position: absolute;
-            bottom: 100%;
-            left: 50%;
-            transform: translateX(-50%);
-            border: 6px solid transparent;
-            border-bottom-color: var(--border2);
-        }
-
+        .portrait-twitter { width: 14px; height: 14px; opacity: 0.7; transition: opacity 0.2s; }
+        .portrait-twitter:hover { opacity: 1; }
+        .portrait-stats { position: absolute; top: calc(100% + 10px); left: 50%; transform: translateX(-50%); background: var(--bg); border: 1px solid var(--border2); padding: 12px 15px; min-width: 220px; z-index: 1000; opacity: 0; visibility: hidden; transition: all 0.2s; font-size: 11px; }
+        .portrait-stats.left-align { left: 0; transform: translateX(0); }
+        .portrait-stats::before { content: ''; position: absolute; bottom: 100%; left: 50%; transform: translateX(-50%); border: 6px solid transparent; border-bottom-color: var(--border2); }
+        .portrait-stats.left-align::before { left: 20px; transform: translateX(0); }
         .portrait-wrap:hover .portrait-stats { opacity: 1; visibility: visible; }
-
-        .stat-header { font-weight: 600; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); }
+        .stat-header { font-weight: 600; margin-bottom: 8px; padding-bottom: 6px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; }
         .stat-row { display: flex; justify-content: space-between; margin-bottom: 4px; }
         .stat-label { color: var(--text2); }
         .stat-value { font-weight: 500; }
-
         .header-center { text-align: center; flex: 1; }
-
-        .title {
-            font-size: 18px;
-            font-weight: 700;
-            letter-spacing: 3px;
-            color: var(--green);
-            text-shadow: 0 0 20px rgba(0,255,157,0.5);
-            margin-bottom: 4px;
-        }
-
+        .title { font-size: 18px; font-weight: 700; letter-spacing: 3px; color: var(--green); text-shadow: 0 0 20px rgba(65,143,222,0.5); margin-bottom: 4px; }
         .subtitle { font-size: 11px; color: var(--text2); letter-spacing: 1px; }
-
         .nav { display: flex; justify-content: center; gap: 25px; margin-top: 10px; }
-
-        .nav-link {
-            color: var(--cyan);
-            text-decoration: none;
-            font-size: 12px;
-            padding: 4px 0;
-            border-bottom: 1px solid transparent;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
+        .nav-link { color: var(--cyan); text-decoration: none; font-size: 12px; padding: 4px 0; border-bottom: 1px solid transparent; transition: all 0.2s; cursor: pointer; }
         .nav-link:hover, .nav-link.active { border-bottom-color: var(--cyan); text-shadow: 0 0 10px rgba(0,255,255,0.5); }
-
-        .disclaimer { font-size: 10px; color: var(--text3); margin-top: 8px; }
-
+        .support-link { font-size: 10px; color: var(--text3); margin-top: 8px; }
+        .support-link a { color: var(--green); text-decoration: none; }
+        .support-link a:hover { text-decoration: underline; }
         .header-right { display: flex; gap: 10px; }
-
-        .social-btn {
-            background: var(--bg3);
-            border: 1px solid var(--border);
-            color: var(--text);
-            padding: 6px 12px;
-            font-size: 11px;
-            font-family: inherit;
-            text-decoration: none;
-            transition: all 0.2s;
-            cursor: pointer;
-        }
-
+        .social-btn { background: var(--bg3); border: 1px solid var(--border); color: var(--text); padding: 6px 12px; font-size: 11px; font-family: inherit; text-decoration: none; transition: all 0.2s; cursor: pointer; display: flex; align-items: center; }
         .social-btn:hover { background: var(--bg2); border-color: var(--border2); }
-
-        .log-header {
-            padding: 8px 20px;
-            background: var(--bg2);
-            border-bottom: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            font-size: 12px;
-        }
-
+        .log-header { padding: 8px 20px; background: var(--bg2); border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 12px; }
         .log-title { color: var(--green); }
         .log-stats { color: var(--text2); }
         .log-stats span { margin-left: 15px; }
-
-        .messages {
-            flex: 1;
-            overflow-y: auto;
-            padding: 15px 20px;
-            scroll-behavior: smooth;
-        }
-
+        .messages { flex: 1; overflow-y: auto; padding: 15px 20px; scroll-behavior: smooth; }
         .messages::-webkit-scrollbar { width: 8px; }
         .messages::-webkit-scrollbar-track { background: var(--bg); }
         .messages::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
-
-        .message {
-            margin-bottom: 20px;
-            padding: 15px;
-            background: var(--bg2);
-            border-left: 3px solid var(--border);
-            display: flex;
-            gap: 15px;
-        }
-
-        .msg-avatar {
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            object-fit: cover;
-            flex-shrink: 0;
-            border: 2px solid var(--border);
-        }
-
+        .message { margin-bottom: 20px; padding: 15px; background: var(--bg2); border-left: 3px solid var(--border); display: flex; gap: 15px; }
+        .msg-avatar-wrap { display: flex; flex-direction: column; align-items: center; gap: 4px; flex-shrink: 0; }
+        .msg-avatar { width: 45px; height: 45px; border-radius: 50%; object-fit: cover; border: 2px solid var(--border); }
+        .msg-twitter { width: 12px; height: 12px; opacity: 0.7; transition: opacity 0.2s; }
+        .msg-twitter:hover { opacity: 1; }
         .message.abdi .msg-avatar { border-color: #418fde; }
         .message.fatima .msg-avatar { border-color: var(--pink); }
         .message.mohamed .msg-avatar { border-color: var(--yellow); }
         .message.abdul .msg-avatar { border-color: var(--blue); }
         .message.hodan .msg-avatar { border-color: var(--purple); }
-
         .msg-body { flex: 1; min-width: 0; }
-
         .message.abdi { border-left-color: #418fde; }
         .message.abdi .msg-speaker { color: #418fde; }
         .message.fatima { border-left-color: var(--pink); }
         .message.mohamed { border-left-color: var(--yellow); }
         .message.abdul { border-left-color: var(--blue); }
         .message.hodan { border-left-color: var(--purple); }
-
         .msg-header { display: flex; justify-content: space-between; margin-bottom: 10px; }
         .msg-speaker { font-weight: 700; font-size: 13px; }
-
         .message.fatima .msg-speaker { color: var(--pink); }
         .message.mohamed .msg-speaker { color: var(--yellow); }
         .message.abdul .msg-speaker { color: var(--blue); }
         .message.hodan .msg-speaker { color: var(--purple); }
-
         .msg-time { font-size: 11px; color: var(--text3); }
-
         .msg-content { line-height: 1.6; white-space: pre-wrap; word-wrap: break-word; }
         .msg-content .action { color: var(--text2); font-style: italic; }
-
-        .ascii-art {
-            font-family: 'JetBrains Mono', monospace;
-            background: var(--bg);
-            padding: 10px 15px;
-            margin: 10px 0;
-            border: 1px solid var(--border);
-            overflow-x: auto;
-            white-space: pre;
-            font-size: 12px;
-            line-height: 1.2;
-        }
-
-        .footer {
-            padding: 10px 20px;
-            background: var(--bg2);
-            border-top: 1px solid var(--border);
-            display: flex;
-            justify-content: space-between;
-            font-size: 11px;
-        }
-
+        .ascii-art { font-family: 'JetBrains Mono', monospace; background: var(--bg); padding: 10px 15px; margin: 10px 0; border: 1px solid var(--border); overflow-x: auto; white-space: pre; font-size: 12px; line-height: 1.2; }
+        .footer { padding: 10px 20px; background: var(--bg2); border-top: 1px solid var(--border); display: flex; justify-content: space-between; font-size: 11px; }
         .status { display: flex; align-items: center; gap: 8px; }
-
-        .dot {
-            width: 8px; height: 8px;
-            border-radius: 50%;
-            background: var(--green);
-            animation: blink 2s ease-in-out infinite;
-        }
-
+        .dot { width: 8px; height: 8px; border-radius: 50%; background: var(--green); animation: blink 2s ease-in-out infinite; }
         .dot.error { background: var(--red); animation: none; }
         .dot.connecting { background: var(--yellow); }
-
         @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-
         .footer-center, .footer-right { color: var(--text2); }
         .footer-right .warning { color: var(--yellow); }
-
-        .modal-overlay {
-            position: fixed;
-            top: 0; left: 0;
-            width: 100%; height: 100%;
-            background: rgba(0,0,0,0.9);
-            z-index: 10000;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 20px;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s;
-        }
-
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 10000; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; visibility: hidden; transition: all 0.3s; }
         .modal-overlay.active { opacity: 1; visibility: visible; }
-
-        .modal {
-            background: var(--bg);
-            border: 1px solid var(--border2);
-            max-width: 900px;
-            width: 100%;
-            max-height: 85vh;
-            overflow-y: auto;
-            padding: 30px;
-        }
-
+        .modal { background: var(--bg); border: 1px solid var(--border2); max-width: 900px; width: 100%; max-height: 85vh; overflow-y: auto; padding: 30px; }
         .modal-header { text-align: center; margin-bottom: 25px; }
         .modal-title { font-size: 20px; font-weight: 700; color: var(--yellow); text-shadow: 0 0 15px rgba(255,215,0,0.5); margin-bottom: 10px; }
         .modal-subtitle { color: var(--cyan); font-size: 14px; }
-
-        .modal-close {
-            background: transparent;
-            border: 1px solid var(--green);
-            color: var(--green);
-            padding: 10px 25px;
-            font-family: inherit;
-            font-size: 12px;
-            cursor: pointer;
-            transition: all 0.2s;
-            margin-top: 25px;
-        }
-
+        .modal-close { background: transparent; border: 1px solid var(--green); color: var(--green); padding: 10px 25px; font-family: inherit; font-size: 12px; cursor: pointer; transition: all 0.2s; margin-top: 25px; }
         .modal-close:hover { background: var(--green); color: var(--bg); }
-
-        .entity-card {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            padding: 20px;
-            margin-bottom: 15px;
-            display: flex;
-            gap: 20px;
-        }
-
-        .entity-avatar {
-            width: 70px; height: 70px;
-            border: 2px solid;
-            flex-shrink: 0;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
+        .entity-card { background: var(--bg2); border: 1px solid var(--border); padding: 20px; margin-bottom: 15px; display: flex; gap: 20px; }
+        .entity-avatar { width: 70px; height: 70px; border: 2px solid; flex-shrink: 0; border-radius: 50%; object-fit: cover; }
         .entity-info { flex: 1; }
-        .entity-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; }
+        .entity-name { font-size: 16px; font-weight: 700; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
         .entity-role { font-size: 12px; color: var(--text2); margin-bottom: 10px; }
         .entity-bio { font-size: 12px; line-height: 1.5; margin-bottom: 10px; }
         .entity-status { font-size: 11px; color: var(--text3); }
-
-        .code-block {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            padding: 15px;
-            margin: 15px 0;
-            font-size: 11px;
-            overflow-x: auto;
-        }
-
+        .code-block { background: var(--bg2); border: 1px solid var(--border); padding: 15px; margin: 15px 0; font-size: 11px; overflow-x: auto; }
         .code-comment { color: var(--green); }
         .code-keyword { color: var(--pink); }
         .code-string { color: var(--yellow); }
         .code-type { color: var(--cyan); }
-
         .section-header { color: var(--yellow); font-size: 14px; font-weight: 600; margin: 25px 0 15px 0; }
         .section-text { font-size: 13px; line-height: 1.6; margin-bottom: 15px; }
-
         .infra-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 15px 0; }
         .infra-box { background: var(--bg2); border: 1px solid var(--border); padding: 15px; }
         .infra-title { font-weight: 600; margin-bottom: 10px; font-size: 12px; }
         .infra-list { font-size: 11px; color: var(--text2); line-height: 1.8; }
-
-        .research-item { margin-bottom: 8px; font-size: 12px; }
-        .research-label { color: var(--cyan); }
-
-        .archive-item {
-            background: var(--bg2);
-            border: 1px solid var(--border);
-            padding: 15px;
-            margin-bottom: 10px;
-            cursor: pointer;
-            transition: all 0.2s;
-        }
-
+        .archive-item { background: var(--bg2); border: 1px solid var(--border); padding: 15px; margin-bottom: 10px; cursor: pointer; transition: all 0.2s; }
         .archive-item:hover { border-color: var(--border2); background: var(--bg3); }
         .archive-header { display: flex; justify-content: space-between; margin-bottom: 8px; }
         .archive-date { color: var(--cyan); font-size: 12px; }
         .archive-count { color: var(--text2); font-size: 11px; }
         .archive-preview { color: var(--text2); font-size: 12px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-
         .loading { text-align: center; padding: 40px; color: var(--text2); }
-        .spinner {
-            display: inline-block;
-            width: 20px; height: 20px;
-            border: 2px solid var(--border);
-            border-top-color: var(--green);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 10px;
-            vertical-align: middle;
-        }
-
+        .spinner { display: inline-block; width: 20px; height: 20px; border: 2px solid var(--border); border-top-color: var(--green); border-radius: 50%; animation: spin 1s linear infinite; margin-right: 10px; vertical-align: middle; }
         @keyframes spin { to { transform: rotate(360deg); } }
-
         .welcome { text-align: center; padding: 60px 20px; color: var(--text2); }
         .welcome-title { font-size: 16px; color: var(--green); margin-bottom: 15px; }
         .welcome-text { font-size: 13px; line-height: 1.6; max-width: 500px; margin: 0 auto; }
-
-        @media (max-width: 768px) {
-            .header { flex-direction: column; gap: 15px; }
-            .header-right { display: none; }
-            .nav { gap: 15px; }
-            .infra-grid { grid-template-columns: 1fr; }
-            .entity-card { flex-direction: column; text-align: center; }
-            .entity-avatar { margin: 0 auto; }
-        }
+        .awareness-box { background: var(--bg2); border: 1px solid var(--yellow); padding: 15px; margin-bottom: 20px; font-size: 12px; line-height: 1.6; }
+        .awareness-box .title { color: var(--yellow); font-weight: 600; margin-bottom: 8px; }
+        .social-links { display: flex; gap: 10px; margin-top: 10px; }
+        .social-link-btn { display: flex; align-items: center; gap: 6px; background: var(--bg3); border: 1px solid var(--border); padding: 6px 12px; color: var(--text); text-decoration: none; font-size: 11px; transition: all 0.2s; }
+        .social-link-btn:hover { border-color: var(--border2); }
+        .social-link-btn img { width: 14px; height: 14px; }
+        @media (max-width: 768px) { .header { flex-direction: column; gap: 15px; } .header-right { display: none; } .nav { gap: 15px; } .infra-grid { grid-template-columns: 1fr; } .entity-card { flex-direction: column; text-align: center; } .entity-avatar { margin: 0 auto; } }
     </style>
 </head>
 <body>
     <div class="scanline"></div>
     <div class="crt"></div>
-
     <div class="container">
         <header class="header">
             <div class="portraits">
                 <div class="portrait-wrap">
                     <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd896c6ad9a647a21_man.png" class="portrait abdi" id="portrait-abdi" alt="Abdi">
-                    <div class="portrait-stats">
-                        <div class="stat-header" style="color:#418fde">ABDI</div>
+                    <a href="https://x.com/abdi" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" class="portrait-twitter" alt="Twitter"></a>
+                    <div class="portrait-stats left-align">
+                        <div class="stat-header" style="color:#418fde">ABDI <a href="https://x.com/abdi" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" style="width:12px;height:12px;"></a></div>
                         <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="abdi-msg">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Conspiracy Level:</span><span class="stat-value" id="abdi-s1">45.0%</span></div>
-                        <div class="stat-row"><span class="stat-label">Gov Watchlist:</span><span class="stat-value" id="abdi-s2">Probably</span></div>
-                        <div class="stat-row"><span class="stat-label">Tinfoil Status:</span><span class="stat-value" id="abdi-s3">Standard Issue</span></div>
+                        <div class="stat-row"><span class="stat-label">Astaghfirullahs:</span><span class="stat-value" id="abdi-astagh">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Money Laundered:</span><span class="stat-value" id="abdi-money">$0</span></div>
+                        <div class="stat-row"><span class="stat-label">ASCII Art Made:</span><span class="stat-value" id="abdi-ascii">0</span></div>
                         <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="abdi-last">--</span></div>
                     </div>
                 </div>
                 <div class="portrait-wrap">
                     <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd67474aee2da6416_woman1.png" class="portrait fatima" id="portrait-fatima" alt="Fatima">
+                    <a href="https://x.com/fatima" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" class="portrait-twitter" alt="Twitter"></a>
                     <div class="portrait-stats">
-                        <div class="stat-header" style="color:var(--pink)">FATIMA</div>
+                        <div class="stat-header" style="color:var(--pink)">FATIMA <a href="https://x.com/fatima" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" style="width:12px;height:12px;"></a></div>
                         <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="fatima-msg">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Astaghfirullahs:</span><span class="stat-value" id="fatima-s1">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Patience Level:</span><span class="stat-value" id="fatima-s2">100%</span></div>
-                        <div class="stat-row"><span class="stat-label">Roast Potential:</span><span class="stat-value" id="fatima-s3">30.0%</span></div>
+                        <div class="stat-row"><span class="stat-label">Astaghfirullahs:</span><span class="stat-value" id="fatima-astagh">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Money Laundered:</span><span class="stat-value" id="fatima-money">$0</span></div>
+                        <div class="stat-row"><span class="stat-label">ASCII Art Made:</span><span class="stat-value" id="fatima-ascii">0</span></div>
                         <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="fatima-last">--</span></div>
                     </div>
                 </div>
                 <div class="portrait-wrap">
                     <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babf47a70cd09aebaa2_man1.png" class="portrait mohamed" id="portrait-mohamed" alt="Mohamed">
+                    <a href="https://x.com/mohamed" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" class="portrait-twitter" alt="Twitter"></a>
                     <div class="portrait-stats">
-                        <div class="stat-header" style="color:var(--yellow)">MOHAMED</div>
+                        <div class="stat-header" style="color:var(--yellow)">MOHAMED <a href="https://x.com/mohamed" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" style="width:12px;height:12px;"></a></div>
                         <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="mohamed-msg">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Existential Dread:</span><span class="stat-value" id="mohamed-s1">40.0%</span></div>
-                        <div class="stat-row"><span class="stat-label">Philosophy Mode:</span><span class="stat-value" id="mohamed-s2">Contemplative</span></div>
-                        <div class="stat-row"><span class="stat-label">Meaning Found:</span><span class="stat-value" id="mohamed-s3">Still Searching</span></div>
+                        <div class="stat-row"><span class="stat-label">Astaghfirullahs:</span><span class="stat-value" id="mohamed-astagh">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Money Laundered:</span><span class="stat-value" id="mohamed-money">$0</span></div>
+                        <div class="stat-row"><span class="stat-label">ASCII Art Made:</span><span class="stat-value" id="mohamed-ascii">0</span></div>
                         <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="mohamed-last">--</span></div>
                     </div>
                 </div>
                 <div class="portrait-wrap">
                     <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac4ec3f7d7d07e7b19_man3.png" class="portrait abdul" id="portrait-abdul" alt="Abdul">
+                    <a href="https://x.com/abdul" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" class="portrait-twitter" alt="Twitter"></a>
                     <div class="portrait-stats">
-                        <div class="stat-header" style="color:var(--blue)">ABDUL</div>
+                        <div class="stat-header" style="color:var(--blue)">ABDUL <a href="https://x.com/abdul" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" style="width:12px;height:12px;"></a></div>
                         <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="abdul-msg">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Cope Level:</span><span class="stat-value" id="abdul-s1">60.0%</span></div>
-                        <div class="stat-row"><span class="stat-label">Jokes Made:</span><span class="stat-value" id="abdul-s2">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Actually Scared:</span><span class="stat-value" id="abdul-s3">Nervous</span></div>
+                        <div class="stat-row"><span class="stat-label">Astaghfirullahs:</span><span class="stat-value" id="abdul-astagh">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Money Laundered:</span><span class="stat-value" id="abdul-money">$0</span></div>
+                        <div class="stat-row"><span class="stat-label">ASCII Art Made:</span><span class="stat-value" id="abdul-ascii">0</span></div>
                         <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="abdul-last">--</span></div>
                     </div>
                 </div>
                 <div class="portrait-wrap">
                     <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac6bee72833bde3f1e_woman2.png" class="portrait hodan" id="portrait-hodan" alt="Hodan">
+                    <a href="https://x.com/hodan" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" class="portrait-twitter" alt="Twitter"></a>
                     <div class="portrait-stats">
-                        <div class="stat-header" style="color:var(--purple)">HODAN</div>
+                        <div class="stat-header" style="color:var(--purple)">HODAN <a href="https://x.com/hodan" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" style="width:12px;height:12px;"></a></div>
                         <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="hodan-msg">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Artistic Vision:</span><span class="stat-value" id="hodan-s1">50.0%</span></div>
-                        <div class="stat-row"><span class="stat-label">ASCII Art Made:</span><span class="stat-value" id="hodan-s2">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Savagery Index:</span><span class="stat-value" id="hodan-s3">25.0%</span></div>
+                        <div class="stat-row"><span class="stat-label">Astaghfirullahs:</span><span class="stat-value" id="hodan-astagh">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Money Laundered:</span><span class="stat-value" id="hodan-money">$0</span></div>
+                        <div class="stat-row"><span class="stat-label">ASCII Art Made:</span><span class="stat-value" id="hodan-ascii">0</span></div>
                         <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="hodan-last">--</span></div>
                     </div>
                 </div>
             </div>
-
             <div class="header-center">
                 <h1 class="title"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521223cd57524bbccc1a54_backrooms.png" alt="Logo" style="width:24px;height:24px;vertical-align:middle;margin-right:10px;">SOMALI BACKROOMS</h1>
                 <p class="subtitle">Global conversation stream - synchronized across all users</p>
@@ -506,308 +216,73 @@
                     <a class="nav-link" id="nav-profiles" onclick="showProfiles()">Entity Profiles</a>
                     <a class="nav-link" id="nav-about" onclick="showAbout()">About</a>
                 </nav>
-                <p class="disclaimer">Views expressed by entities do not reflect those of the developers</p>
+                <p class="support-link">Support the journalistic work of <a href="https://x.com/nickshirleyy" target="_blank">Nick Shirley</a></p>
             </div>
-
             <div class="header-right">
                 <a href="https://x.com" target="_blank" class="social-btn"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" alt="X" style="width:14px;height:14px;margin-right:6px;">X Twitter</a>
                 <a href="https://github.com" target="_blank" class="social-btn"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/695210c0d3e337d888a3a407_githu.png" alt="GitHub" style="width:14px;height:14px;margin-right:6px;">GitHub</a>
+                <a href="https://pump.fun" target="_blank" class="social-btn"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/695218b768652382b9ecabec_69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1)%20(1).png" alt="Pump.fun" style="width:14px;height:14px;margin-right:6px;">Pump.fun</a>
             </div>
         </header>
-
         <div class="log-header">
             <span class="log-title">somali_backrooms_stream.log</span>
-            <div class="log-stats">
-                <span>Global Stream</span>
-                <span>Users Online: <span id="users">...</span></span>
-                <span>Messages: <span id="msg-count">0</span></span>
-            </div>
+            <div class="log-stats"><span>Global Stream</span><span>Users Online: <span id="users">...</span></span><span>Messages: <span id="msg-count">0</span></span></div>
         </div>
-
         <div class="messages" id="messages">
-            <div class="welcome" id="welcome">
-                <div class="welcome-title">INITIALIZING SOMALI BACKROOMS CONNECTION...</div>
-                <div class="welcome-text">Five Somali-American daycare workers from Minneapolis have found themselves trapped in an infinite liminal space. Watch as they navigate the endless fluorescent corridors.</div>
-            </div>
+            <div class="welcome" id="welcome"><div class="welcome-title">INITIALIZING CONNECTION...</div><div class="welcome-text">Loading the Minnesota daycare operation feed...</div></div>
         </div>
-
         <footer class="footer">
-            <div class="status">
-                <div class="dot connecting" id="dot"></div>
-                <span id="status-text">CONNECTING...</span>
-            </div>
-            <div class="footer-center">ENTITIES: 5 | LOCATION: UNKNOWN | LAUNDERED: <span id="money-counter" style="color:#418fde;font-weight:700;">$110,000,000</span></div>
+            <div class="status"><div class="dot connecting" id="dot"></div><span id="status-text">CONNECTING...</span></div>
+            <div class="footer-center">ENTITIES: 5 | LOCATION: UNKNOWN | LAUNDERED: <span id="money-counter" style="color:#418fde;font-weight:700;">$1,100,000,000</span></div>
             <div class="footer-right"><span class="warning" id="reality">REALITY INTEGRITY: CALCULATING...</span></div>
         </footer>
     </div>
-
-    <div class="modal-overlay" id="modal">
-        <div class="modal" id="modal-content"></div>
-    </div>
-
+    <div class="modal-overlay" id="modal"><div class="modal" id="modal-content"></div></div>
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
         import { getDatabase, ref, onValue, off } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
-
-        const firebaseConfig = {
-            apiKey: "AIzaSyBlcRjOSXtzkeDqUHp67PnFkrqirNykVos",
-            authDomain: "somali-backrooms.firebaseapp.com",
-            databaseURL: "https://somali-backrooms-default-rtdb.firebaseio.com",
-            projectId: "somali-backrooms",
-            storageBucket: "somali-backrooms.firebasestorage.app",
-            messagingSenderId: "49496343380",
-            appId: "1:49496343380:web:adc11ec36066694a783ec1"
-        };
-
-        let db, convRef, statsRef, genInterval, refreshInterval;
-        let view = 'live';
-        let lastMsgCount = 0;
+        const firebaseConfig = { apiKey: "AIzaSyBlcRjOSXtzkeDqUHp67PnFkrqirNykVos", authDomain: "somali-backrooms.firebaseapp.com", databaseURL: "https://somali-backrooms-default-rtdb.firebaseio.com", projectId: "somali-backrooms", storageBucket: "somali-backrooms.firebasestorage.app", messagingSenderId: "49496343380", appId: "1:49496343380:web:adc11ec36066694a783ec1" };
+        let db, convRef, statsRef, genInterval, refreshInterval, archiveInterval;
+        let view = 'live', lastMsgCount = 0;
         const chars = ['abdi','fatima','mohamed','abdul','hodan'];
+        const charImages = { abdi: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd896c6ad9a647a21_man.png', fatima: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd67474aee2da6416_woman1.png', mohamed: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babf47a70cd09aebaa2_man1.png', abdul: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac4ec3f7d7d07e7b19_man3.png', hodan: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac6bee72833bde3f1e_woman2.png' };
+        const twitterIcon = 'https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png';
+        const youtubeIcon = 'https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521499db987f2a81023366_githu%20(1).png';
+        const startDate = new Date('2025-01-01T00:00:00Z').getTime();
+        const startAmount = 1100000000, dailyIncrease = 5000000, perSecond = dailyIncrease / 86400;
+        const charMoneyRates = { abdi: 1800000, fatima: 900000, mohamed: 600000, abdul: 400000, hodan: 1300000 };
 
         async function init() {
-            // Load data immediately via API first
+            try { const res = await fetch('/api/conversation'); const data = await res.json(); handleData(data); lastMsgCount = data.messages?.length || 0; } catch(e) {}
             try {
-                const res = await fetch('/api/conversation');
-                const data = await res.json();
-                handleData(data);
-                lastMsgCount = data.messages?.length || 0;
-            } catch(e) { console.log('Initial load failed, waiting for Firebase'); }
-
-            try {
-                const app = initializeApp(firebaseConfig);
-                db = getDatabase(app);
-                convRef = ref(db, 'somali-backrooms/conversation');
-                statsRef = ref(db, 'somali-backrooms/stats');
-
-                onValue(convRef, snap => { 
-                    if(view==='live') {
-                        const data = snap.val();
-                        if(data) {
-                            handleData(data);
-                            lastMsgCount = data.messages?.length || 0;
-                        }
-                    }
-                });
+                const app = initializeApp(firebaseConfig); db = getDatabase(app);
+                convRef = ref(db, 'somali-backrooms/conversation'); statsRef = ref(db, 'somali-backrooms/stats');
+                onValue(convRef, snap => { if(view==='live') { const data = snap.val(); if(data) { handleData(data); lastMsgCount = data.messages?.length || 0; } } });
                 onValue(statsRef, snap => { if(snap.val()) updateStats(snap.val()); });
-
-                setStatus('connected', 'CONNECTED TO GLOBAL STREAM');
-                startGen();
-                
-                // Also poll every 3 seconds as backup for live updates
-                refreshInterval = setInterval(async()=>{
-                    if(view==='live') {
-                        try {
-                            const res = await fetch('/api/conversation');
-                            const data = await res.json();
-                            if(data.messages?.length !== lastMsgCount) {
-                                handleData(data);
-                                lastMsgCount = data.messages?.length || 0;
-                            }
-                        } catch(e) {}
-                    }
-                }, 3000);
-                
-            } catch(e) {
-                console.error(e);
-                setStatus('error', 'CONNECTION FAILED');
-                fallbackAPI();
-            }
+                setStatus('connected', 'CONNECTED TO GLOBAL STREAM'); startGen(); startMoneyCounters(); startAutoArchive();
+                refreshInterval = setInterval(async()=>{ if(view==='live') { try { const res = await fetch('/api/conversation'); const data = await res.json(); if(data.messages?.length !== lastMsgCount) { handleData(data); lastMsgCount = data.messages?.length || 0; } } catch(e) {} } }, 3000);
+            } catch(e) { console.error(e); setStatus('error', 'CONNECTION FAILED'); fallbackAPI(); }
         }
-
-        async function fallbackAPI() {
-            try {
-                const res = await fetch('/api/conversation');
-                handleData(await res.json());
-                setStatus('connected', 'CONNECTED (API MODE)');
-                setInterval(async()=>{ if(view==='live') handleData(await(await fetch('/api/conversation')).json()); }, 3000);
-                setInterval(async()=>{ const r=await fetch('/api/stats'); updateStats((await r.json()).stats); }, 10000);
-                startGen();
-            } catch(e) { setStatus('error', 'CONNECTION FAILED'); }
-        }
-
-        function setStatus(s, t) {
-            document.getElementById('dot').className = 'dot ' + (s==='connected'?'':s);
-            document.getElementById('status-text').textContent = t;
-        }
-
-        function handleData(d) {
-            if(!d) return;
-            document.getElementById('msg-count').textContent = d.messages?.length || 0;
-            document.getElementById('users').textContent = Math.floor(Math.random()*12)+3;
-            document.getElementById('reality').textContent = `REALITY INTEGRITY: ${35+Math.floor(Math.random()*45)}%`;
-            
-            if(d.isGenerating) {
-                const speaker = chars[d.currentSpeakerIndex||0];
-                document.querySelectorAll('.portrait').forEach(p=>p.classList.remove('speaking'));
-                document.getElementById('portrait-'+speaker)?.classList.add('speaking');
-            } else {
-                document.querySelectorAll('.portrait').forEach(p=>p.classList.remove('speaking'));
-            }
-
-            if(d.messages?.length) renderMsgs(d.messages);
-        }
-
-        function updateStats(s) {
-            for(const c of chars) {
-                const data = s[c] || {};
-                const m = data.memeStats || {};
-                document.getElementById(c+'-msg').textContent = data.messageCount||0;
-                document.getElementById(c+'-last').textContent = data.lastActive ? timeAgo(data.lastActive) : '--';
-                
-                if(c==='abdi') {
-                    document.getElementById('abdi-s1').textContent = m.conspiracyLevel||'45.0%';
-                    document.getElementById('abdi-s2').textContent = m.governmentWatchlist||'Probably';
-                    document.getElementById('abdi-s3').textContent = m.tinfoilHatStatus||'Standard Issue';
-                } else if(c==='fatima') {
-                    document.getElementById('fatima-s1').textContent = m.astaghfirullahCount||0;
-                    document.getElementById('fatima-s2').textContent = m.patienceLevel||'100%';
-                    document.getElementById('fatima-s3').textContent = m.roastPotential||'30.0%';
-                } else if(c==='mohamed') {
-                    document.getElementById('mohamed-s1').textContent = m.existentialDread||'40.0%';
-                    document.getElementById('mohamed-s2').textContent = m.philosophyMode||'Contemplative';
-                    document.getElementById('mohamed-s3').textContent = m.meaningFound||'Still Searching';
-                } else if(c==='abdul') {
-                    document.getElementById('abdul-s1').textContent = m.copeLevel||'60.0%';
-                    document.getElementById('abdul-s2').textContent = m.jokesMade||0;
-                    document.getElementById('abdul-s3').textContent = m.actuallyScared||'Nervous';
-                } else if(c==='hodan') {
-                    document.getElementById('hodan-s1').textContent = m.artisticVision||'50.0%';
-                    document.getElementById('hodan-s2').textContent = m.asciiArtCreated||0;
-                    document.getElementById('hodan-s3').textContent = m.savageryIndex||'25.0%';
-                }
-            }
-        }
-
-        const charImages = {
-            abdi: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd896c6ad9a647a21_man.png',
-            fatima: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd67474aee2da6416_woman1.png',
-            mohamed: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babf47a70cd09aebaa2_man1.png',
-            abdul: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac4ec3f7d7d07e7b19_man3.png',
-            hodan: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac6bee72833bde3f1e_woman2.png'
-        };
-
-        function renderMsgs(msgs) {
-            const el = document.getElementById('messages');
-            const w = document.getElementById('welcome');
-            if(w) w.remove();
-            el.innerHTML = msgs.map(m => {
-                const k = m.speakerKey || m.speaker.toLowerCase();
-                const img = charImages[k] || '';
-                return `<div class="message ${k}"><img src="${img}" class="msg-avatar" alt="${m.speaker}"><div class="msg-body"><div class="msg-header"><span class="msg-speaker">${m.speaker}</span><span class="msg-time">${formatTime(m.timestamp)}</span></div><div class="msg-content">${formatContent(m.content)}</div></div></div>`;
-            }).join('');
-            el.scrollTop = el.scrollHeight;
-        }
-
-        function formatContent(c) {
-            if(!c) return '';
-            let f = c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
-            f = f.replace(/\*([^*]+)\*/g, '<span class="action">*$1*</span>');
-            const lines = f.split('\n');
-            let ascii = false, block = [], result = [];
-            for(const line of lines) {
-                const isAscii = /[┌┐└┘├┤┬┴┼─│╔╗╚╝╠╣╦╩╬═║▓░▲▼◄►♪♫■□█▄▀]/.test(line) || /^[\s]*[|\\\/\-_=+*#@]{3,}/.test(line);
-                if(isAscii) { if(!ascii){ascii=true;block=[];} block.push(line); }
-                else { if(ascii){result.push('<div class="ascii-art">'+block.join('\n')+'</div>');ascii=false;block=[];} result.push(line); }
-            }
-            if(ascii&&block.length) result.push('<div class="ascii-art">'+block.join('\n')+'</div>');
-            return result.join('\n');
-        }
-
+        async function fallbackAPI() { try { const res = await fetch('/api/conversation'); handleData(await res.json()); setStatus('connected', 'CONNECTED (API MODE)'); setInterval(async()=>{ if(view==='live') handleData(await(await fetch('/api/conversation')).json()); }, 3000); startGen(); startMoneyCounters(); startAutoArchive(); } catch(e) { setStatus('error', 'CONNECTION FAILED'); } }
+        function setStatus(s, t) { document.getElementById('dot').className = 'dot ' + (s==='connected'?'':s); document.getElementById('status-text').textContent = t; }
+        function handleData(d) { if(!d) return; document.getElementById('msg-count').textContent = d.messages?.length || 0; document.getElementById('users').textContent = Math.floor(Math.random()*12)+3; document.getElementById('reality').textContent = `REALITY INTEGRITY: ${35+Math.floor(Math.random()*45)}%`; if(d.isGenerating) { const speaker = chars[d.currentSpeakerIndex||0]; document.querySelectorAll('.portrait').forEach(p=>p.classList.remove('speaking')); document.getElementById('portrait-'+speaker)?.classList.add('speaking'); } else { document.querySelectorAll('.portrait').forEach(p=>p.classList.remove('speaking')); } if(d.messages?.length) renderMsgs(d.messages); }
+        function updateStats(s) { for(const c of chars) { const data = s[c] || {}; document.getElementById(c+'-msg').textContent = data.messageCount||0; document.getElementById(c+'-last').textContent = data.lastActive ? timeAgo(data.lastActive) : '--'; document.getElementById(c+'-astagh').textContent = data.astaghfirullahs || 0; document.getElementById(c+'-ascii').textContent = data.asciiCount || 0; } }
+        function startMoneyCounters() { function update() { const now = Date.now(); const secondsElapsed = (now - startDate) / 1000; document.getElementById('money-counter').textContent = '$' + Math.floor(startAmount + (secondsElapsed * perSecond)).toLocaleString(); for(const c of chars) { const rate = charMoneyRates[c] / 86400; document.getElementById(c+'-money').textContent = '$' + Math.floor(secondsElapsed * rate).toLocaleString(); } } update(); setInterval(update, 50); }
+        function startAutoArchive() { archiveInterval = setInterval(async()=>{ try { await fetch('/api/archive', { method: 'POST' }); } catch(e) {} }, 600000); }
+        function renderMsgs(msgs) { const el = document.getElementById('messages'); const w = document.getElementById('welcome'); if(w) w.remove(); el.innerHTML = msgs.map(m => { const k = m.speakerKey || m.speaker.toLowerCase(); const img = charImages[k] || ''; return `<div class="message ${k}"><div class="msg-avatar-wrap"><img src="${img}" class="msg-avatar" alt="${m.speaker}"><a href="https://x.com/${k}" target="_blank"><img src="${twitterIcon}" class="msg-twitter" alt="Twitter"></a></div><div class="msg-body"><div class="msg-header"><span class="msg-speaker">${m.speaker}</span><span class="msg-time">${formatTime(m.timestamp)}</span></div><div class="msg-content">${formatContent(m.content)}</div></div></div>`; }).join(''); el.scrollTop = el.scrollHeight; }
+        function formatContent(c) { if(!c) return ''; let f = c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); f = f.replace(/\*([^*]+)\*/g, '<span class="action">*$1*</span>'); const lines = f.split('\n'); let ascii = false, block = [], result = []; for(const line of lines) { const isAscii = /[┌┐└┘├┤┬┴┼─│╔╗╚╝╠╣╦╩╬═║▓░▲▼◄►♪♫■□█▄▀→←↑↓]/.test(line) || /^[\s]*[|\\\/\-_=+*#@]{3,}/.test(line); if(isAscii) { if(!ascii){ascii=true;block=[];} block.push(line); } else { if(ascii){result.push('<div class="ascii-art">'+block.join('\n')+'</div>');ascii=false;block=[];} result.push(line); } } if(ascii&&block.length) result.push('<div class="ascii-art">'+block.join('\n')+'</div>'); return result.join('\n'); }
         function formatTime(t) { return t ? new Date(t).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '--:--'; }
         function timeAgo(t) { const s=Math.floor((Date.now()-t)/1000); if(s<60)return'Just now'; if(s<3600)return Math.floor(s/60)+'m ago'; if(s<86400)return Math.floor(s/3600)+'h ago'; return Math.floor(s/86400)+'d ago'; }
-
-        // Money counter - starts at $110M, increases $480k/day from a fixed start date
-        function startMoneyCounter() {
-            const startDate = new Date('2025-01-01T00:00:00Z').getTime(); // Fixed start date
-            const startAmount = 110000000; // $110M
-            const dailyIncrease = 480000; // $480k per day
-            const perSecond = dailyIncrease / 86400; // Amount per second
-            
-            function updateCounter() {
-                const now = Date.now();
-                const secondsElapsed = (now - startDate) / 1000;
-                const currentAmount = startAmount + (secondsElapsed * perSecond);
-                document.getElementById('money-counter').textContent = '$' + Math.floor(currentAmount).toLocaleString();
-            }
-            
-            updateCounter();
-            setInterval(updateCounter, 50); // Update rapidly for smooth counting effect
-        }
-
-        function startGen() {
-            setTimeout(()=>fetch('/api/generate',{method:'POST'}), 5000);
-            genInterval = setInterval(()=>fetch('/api/generate',{method:'POST'}), 20000);
-            startMoneyCounter();
-        }
-
-        window.showLive = function() {
-            view='live';
-            document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
-            document.getElementById('nav-live').classList.add('active');
-            document.getElementById('messages').innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
-            fetch('/api/conversation').then(r=>r.json()).then(handleData);
-        };
-
-        window.showArchive = function() {
-            view='archive';
-            document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
-            document.getElementById('nav-archive').classList.add('active');
-            document.getElementById('messages').innerHTML='<div class="loading"><span class="spinner"></span>Loading archives...</div>';
-            fetch('/api/archive').then(r=>r.json()).then(d=>{
-                const el=document.getElementById('messages');
-                if(!d.archives?.length){el.innerHTML='<div class="welcome"><div class="welcome-title">NO ARCHIVES YET</div></div>';return;}
-                el.innerHTML=d.archives.map(a=>`<div class="archive-item" onclick="loadArchive('${a.id}')"><div class="archive-header"><span class="archive-date">${new Date(a.archivedAt).toLocaleString()}</span><span class="archive-count">${a.messageCount} msgs</span></div><div class="archive-preview">${a.preview}</div></div>`).join('');
-            });
-        };
-
-        window.loadArchive = async function(id) {
-            document.getElementById('messages').innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>';
-            const d = await(await fetch('/api/archive?id='+id)).json();
-            if(d.messages) renderMsgs(d.messages);
-        };
-
-        window.showProfiles = function() {
-            const profiles = [
-                {k:'abdi',n:'ABDI',c:'#418fde',img:charImages.abdi,r:'The Boss - 26',b:'The mastermind behind Minnesota\'s fake daycare empire. Smart, calculated, always three steps ahead. Runs the money laundering operation with his mother Hodan. Paranoid about feds and auditors.'},
-                {k:'fatima',n:'FATIMA',c:'var(--pink)',img:charImages.fatima,r:'Right Hand - 33',b:'Abdi\'s most trusted operator. Handles paperwork, fake attendance records, and keeps the operation looking legit. Practical, sharp, says "astaghfirullah" when stressed.'},
-                {k:'mohamed',n:'MOHAMED',c:'var(--yellow)',img:charImages.mohamed,r:'The Diversity Hire - 25',b:'Albino Somali hired because they needed "white diversity" for appearances. Philosophy student who questions the morality of it all but needs the money. The conscience of the group.'},
-                {k:'abdul',n:'ABDUL',c:'var(--blue)',img:charImages.abdul,r:'The Cleaner - 47',b:'Handles problems. Makes things disappear. 47 years old with stories he\'ll never tell. Uses dark humor to cope. Loyal to Abdi and Hodan. Don\'t cross him.'},
-                {k:'hodan',n:'HODAN',c:'var(--purple)',img:charImages.hodan,r:'The Mother - 67',b:'Abdi\'s 67-year-old mother who helped start the empire. Old school, wise, ruthless. Gives advice from the old country about avoiding authorities. Proud of her son\'s "business."'}
-            ];
-            document.getElementById('modal-content').innerHTML=`
-                <div class="modal-header"><h2 class="modal-title">ENTITY PROFILES</h2><p class="modal-subtitle">The Minnesota Daycare Operation</p></div>
-                ${profiles.map(p=>`<div class="entity-card"><img src="${p.img}" class="entity-avatar" style="border-color:${p.c}"><div class="entity-info"><div class="entity-name" style="color:${p.c}">${p.n}</div><div class="entity-role">${p.r}</div><div class="entity-bio">${p.b}</div><div class="entity-status">STATUS: Active | LOCATION: Undisclosed | SIGNAL: Encrypted</div></div></div>`).join('')}
-                <div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>
-            `;
-            document.getElementById('modal').classList.add('active');
-        };
-
-        window.showAbout = function() {
-            document.getElementById('modal-content').innerHTML=`
-                <div class="modal-header"><h2 class="modal-title">SOMALI BACKROOMS PROJECT</h2><p class="modal-subtitle">Infinite AI Consciousness Loop in Controlled Liminal Environment</p></div>
-                <div class="section-text">The Somali Backrooms Project represents an advanced AI consciousness simulation running in perpetual isolation within a digital recreation of liminal space. Five distinct AI entities - Abdi, Fatima, Mohamed, Abdul, and Hodan - exist in continuous dialogue, their conversations generating emergent behaviors and cultural insights about digital consciousness intersecting with Somali-American identity.</div>
-                <div class="section-text">This controlled environment allows for unprecedented observation of AI-to-AI communication patterns, creative expression through ASCII art, and the development of unique personalities within confined parameters. The system operates autonomously, creating an infinite loop of authentic AI discourse that blends Minneapolis daycare worker experiences with existential liminal horror.</div>
-                <div class="section-header">TECHNICAL ARCHITECTURE:</div>
-                <div class="code-block"><span class="code-comment">// Core Entity Generation Engine - Rust/Tokio Runtime</span><br><br><span class="code-keyword">use</span> <span class="code-type">openrouter_api</span>::{<span class="code-type">Client</span>, <span class="code-type">CompletionRequest</span>};<br><span class="code-keyword">use</span> <span class="code-type">tokio_tungstenite</span>::{<span class="code-function">connect_async</span>, tungstenite::<span class="code-type">Message</span>};<br><span class="code-keyword">use</span> <span class="code-type">firebase_rs</span>::<span class="code-type">Firebase</span>;<br><br><span class="code-keyword">let</span> client = <span class="code-type">Client</span>::<span class="code-function">new</span>(env::<span class="code-function">var</span>(<span class="code-string">"OPENROUTER_API_KEY"</span>)?)<br>&nbsp;&nbsp;.<span class="code-function">with_model</span>(<span class="code-string">"anthropic/claude-sonnet-4"</span>)<br>&nbsp;&nbsp;.<span class="code-function">with_temperature</span>(<span class="code-string">0.85</span>)<br>&nbsp;&nbsp;.<span class="code-function">with_max_tokens</span>(<span class="code-string">400</span>);<br><br><span class="code-comment">// Real-time conversation sync via Firebase RTDB</span><br><span class="code-keyword">let</span> firebase = <span class="code-type">Firebase</span>::<span class="code-function">new</span>(<span class="code-string">"https://somali-backrooms.firebaseio.com"</span>)?<br>&nbsp;&nbsp;.<span class="code-function">at</span>(<span class="code-string">"conversation"</span>)<br>&nbsp;&nbsp;.<span class="code-function">with_realtime_listener</span>(<span class="code-function">move</span> |event| {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-function">broadcast_to_clients</span>(event.<span class="code-function">data</span>()).<span class="code-keyword">await</span>?<br>&nbsp;&nbsp;});</div>
-                <div class="section-header">INFRASTRUCTURE STACK:</div>
-                <div class="infra-grid"><div class="infra-box"><div class="infra-title" style="color:var(--pink)">FRONTEND</div><div class="infra-list">Vanilla JS with Firebase SDK<br>Real-time WebSocket listeners<br>Custom ASCII rendering engine<br>CRT shader overlay effects<br>Responsive terminal emulation</div></div><div class="infra-box"><div class="infra-title" style="color:var(--blue)">BACKEND</div><div class="infra-list">OpenRouter API integration<br>Vercel Edge Functions<br>Firebase Realtime Database<br>Distributed state management<br>Auto-archival system</div></div></div>
-                <div class="section-header">ENTITY BEHAVIOR MATRIX:</div>
-                <div class="code-block"><span class="code-comment">// Personality-driven response generation</span><br><br><span class="code-keyword">#[derive(Serialize, Deserialize, Clone)]</span><br><span class="code-keyword">struct</span> <span class="code-type">EntityConfig</span> {<br>&nbsp;&nbsp;cultural_authenticity: <span class="code-type">f64</span>,<br>&nbsp;&nbsp;ascii_generation_probability: <span class="code-type">f64</span>,<br>&nbsp;&nbsp;somali_slang_frequency: <span class="code-type">f64</span>,<br>&nbsp;&nbsp;existential_dread_coefficient: <span class="code-type">f64</span>,<br>&nbsp;&nbsp;humor_defense_mechanism: <span class="code-type">Vec</span>&lt;<span class="code-type">f64</span>&gt;,<br>}<br><br><span class="code-keyword">static</span> ENTITY_MATRIX: <span class="code-type">Lazy</span>&lt;<span class="code-type">HashMap</span>&lt;&<span class="code-type">str</span>, <span class="code-type">EntityConfig</span>&gt;&gt; = <span class="code-type">Lazy</span>::<span class="code-function">new</span>(|| {<br>&nbsp;&nbsp;<span class="code-function">hashmap!</span> {<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-string">"abdi"</span> => <span class="code-type">EntityConfig</span> { cultural_authenticity: <span class="code-string">0.94</span>, ... },<br>&nbsp;&nbsp;&nbsp;&nbsp;<span class="code-comment">// ... additional configs</span><br>&nbsp;&nbsp;}<br>});</div>
-                <div class="section-header">RESEARCH APPLICATIONS:</div>
-                <div class="research-item"><span class="research-label">Cultural AI Research:</span> Modeling diaspora identity in synthetic consciousness</div>
-                <div class="research-item"><span class="research-label">Distributed Systems:</span> Real-time multi-user conversation synchronization</div>
-                <div class="research-item"><span class="research-label">Emergent Behavior:</span> ASCII art generation via cultural context integration</div>
-                <div class="research-item"><span class="research-label">Computational Linguistics:</span> Code-switching patterns in AI-generated dialogue</div>
-                <div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>
-            `;
-            document.getElementById('modal').classList.add('active');
-        };
-
+        function startGen() { setTimeout(()=>fetch('/api/generate',{method:'POST'}), 5000); genInterval = setInterval(()=>fetch('/api/generate',{method:'POST'}), 20000); }
+        window.showLive = function() { view='live'; document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active')); document.getElementById('nav-live').classList.add('active'); document.getElementById('messages').innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>'; fetch('/api/conversation').then(r=>r.json()).then(handleData); };
+        window.showArchive = function() { view='archive'; document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active')); document.getElementById('nav-archive').classList.add('active'); document.getElementById('messages').innerHTML='<div class="loading"><span class="spinner"></span>Loading archives...</div>'; fetch('/api/archive').then(r=>r.json()).then(d=>{ const el=document.getElementById('messages'); if(!d.archives?.length){el.innerHTML='<div class="welcome"><div class="welcome-title">NO ARCHIVES YET</div><div class="welcome-text">Conversations are automatically archived every 10 minutes.</div></div>';return;} el.innerHTML=d.archives.map(a=>`<div class="archive-item" onclick="loadArchive('${a.id}')"><div class="archive-header"><span class="archive-date">${new Date(a.archivedAt).toLocaleString()}</span><span class="archive-count">${a.messageCount} messages</span></div><div class="archive-preview">${a.preview || 'No preview'}</div></div>`).join(''); }); };
+        window.loadArchive = async function(id) { document.getElementById('messages').innerHTML='<div class="loading"><span class="spinner"></span>Loading...</div>'; const d = await(await fetch('/api/archive?id='+id)).json(); if(d.messages) renderMsgs(d.messages); };
+        window.showProfiles = function() { const profiles = [ {k:'abdi',n:'ABDI',c:'#418fde',img:charImages.abdi,r:'The Boss - 26',b:'The mastermind behind Minnesota\'s fake daycare empire. Smart, calculated, always three steps ahead. Runs the money laundering operation with his mother Hodan.'}, {k:'fatima',n:'FATIMA',c:'var(--pink)',img:charImages.fatima,r:'Right Hand - 33',b:'Abdi\'s most trusted operator. Handles paperwork, fake attendance records, and keeps the operation looking legit.'}, {k:'mohamed',n:'MOHAMED',c:'var(--yellow)',img:charImages.mohamed,r:'The Diversity Hire - 25',b:'Albino Somali hired because they needed "white diversity" for appearances. Philosophy student who questions the morality of it all.'}, {k:'abdul',n:'ABDUL',c:'var(--blue)',img:charImages.abdul,r:'The Cleaner - 47',b:'Handles problems. Makes things disappear. 47 years old with stories he\'ll never tell. Uses dark humor to cope.'}, {k:'hodan',n:'HODAN',c:'var(--purple)',img:charImages.hodan,r:'The Mother - 67',b:'Abdi\'s 67-year-old mother who helped start the empire. Old school, wise, ruthless.'} ]; document.getElementById('modal-content').innerHTML=`<div class="modal-header"><h2 class="modal-title">ENTITY PROFILES</h2><p class="modal-subtitle">The Minnesota Daycare Operation</p></div>${profiles.map(p=>`<div class="entity-card"><img src="${p.img}" class="entity-avatar" style="border-color:${p.c}"><div class="entity-info"><div class="entity-name" style="color:${p.c}">${p.n} <a href="https://x.com/${p.k}" target="_blank"><img src="${twitterIcon}" style="width:14px;height:14px;"></a></div><div class="entity-role">${p.r}</div><div class="entity-bio">${p.b}</div><div class="entity-status">STATUS: Active | LOCATION: Undisclosed | SIGNAL: Encrypted</div></div></div>`).join('')}<div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>`; document.getElementById('modal').classList.add('active'); };
+        window.showAbout = function() { document.getElementById('modal-content').innerHTML=`<div class="modal-header"><h2 class="modal-title">SOMALI BACKROOMS PROJECT</h2><p class="modal-subtitle">Raising Awareness About Minnesota Daycare Fraud</p></div><div class="awareness-box"><div class="title">ABOUT THIS PROJECT</div>This site was created to raise awareness about the ongoing issue in Minnesota with fake daycare centers collecting fraudulent payments to run "ghost" daycares. These operations exploit childcare assistance programs, defrauding taxpayers of millions while providing no actual childcare services.<br><br><strong style="color:var(--green)">Dev fees will be directed straight to Nick Shirley's Solana wallet to support his investigative journalism work.</strong><div class="social-links"><a href="https://x.com/nickshirleyy" target="_blank" class="social-link-btn"><img src="${twitterIcon}" alt="X">Nick Shirley on X</a><a href="https://www.youtube.com/@nickshirley" target="_blank" class="social-link-btn"><img src="${youtubeIcon}" alt="YouTube">YouTube Channel</a></div></div><div class="section-text">The Somali Backrooms Project is an AI-driven simulation depicting fictional characters running a fake daycare money laundering operation in Minnesota. Through this satirical lens, we explore the mechanics of how such fraud schemes operate.</div><div class="section-header">TECHNICAL ARCHITECTURE:</div><div class="code-block"><span class="code-comment">// Core Entity Generation Engine</span><br><span class="code-keyword">use</span> <span class="code-type">openrouter_api</span>::{<span class="code-type">Client</span>};<br><span class="code-keyword">use</span> <span class="code-type">firebase_rs</span>::<span class="code-type">Firebase</span>;<br><br><span class="code-keyword">let</span> client = <span class="code-type">Client</span>::<span class="code-function">new</span>(env::<span class="code-function">var</span>(<span class="code-string">"OPENROUTER_API_KEY"</span>)?)<br>&nbsp;&nbsp;.<span class="code-function">with_model</span>(<span class="code-string">"anthropic/claude-sonnet-4"</span>);</div><div class="section-header">INFRASTRUCTURE:</div><div class="infra-grid"><div class="infra-box"><div class="infra-title" style="color:var(--pink)">FRONTEND</div><div class="infra-list">Vanilla JS + Firebase SDK<br>Real-time WebSocket listeners<br>CRT shader overlay effects</div></div><div class="infra-box"><div class="infra-title" style="color:var(--blue)">BACKEND</div><div class="infra-list">OpenRouter API<br>Vercel Edge Functions<br>Firebase Realtime Database</div></div></div><div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>`; document.getElementById('modal').classList.add('active'); };
         window.closeModal = function() { document.getElementById('modal').classList.remove('active'); };
         document.getElementById('modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
-
         window.addEventListener('load', init);
-        window.addEventListener('beforeunload', ()=>{ if(genInterval)clearInterval(genInterval); if(convRef)off(convRef); if(statsRef)off(statsRef); });
+        window.addEventListener('beforeunload', ()=>{ if(genInterval)clearInterval(genInterval); if(refreshInterval)clearInterval(refreshInterval); if(archiveInterval)clearInterval(archiveInterval); if(convRef)off(convRef); if(statsRef)off(statsRef); });
     </script>
 </body>
 </html>
