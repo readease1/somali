@@ -232,9 +232,8 @@
         const charImages = { opus: 'https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png', sonnet: 'https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png', haiku: 'https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png', claude3: 'https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png', claude2: 'https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png' };
         const twitterIcon = 'https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png';
         const youtubeIcon = 'https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521499db987f2a81023366_githu%20(1).png';
-        const startDate = new Date('2025-01-01T00:00:00Z').getTime();
-        const startAmount = 0, dailyIncrease = 541, perSecond = dailyIncrease / 86400;
-        const charMoneyRates = { opus: 120, sonnet: 110, haiku: 95, claude3: 108, claude2: 108 };
+        let totalTasksCompleted = 0;
+        const modelTaskCounts = { opus: 0, sonnet: 0, haiku: 0, claude3: 0, claude2: 0 };
 
         async function init() {
             try { const res = await fetch('/api/conversation'); const data = await res.json(); handleData(data); lastMsgCount = data.messages?.length || 0; } catch(e) {}
@@ -243,15 +242,43 @@
                 convRef = ref(db, 'somali-backrooms/conversation'); statsRef = ref(db, 'somali-backrooms/stats');
                 onValue(convRef, snap => { if(view==='live') { const data = snap.val(); if(data) { handleData(data); lastMsgCount = data.messages?.length || 0; } } });
                 onValue(statsRef, snap => { if(snap.val()) updateStats(snap.val()); });
-                setStatus('connected', 'CONNECTED TO GLOBAL STREAM'); startGen(); startMoneyCounters(); startAutoArchive();
+
+                // Listen for task completions
+                const tasksRef = ref(db, 'somali-backrooms/tasks');
+                onValue(tasksRef, snap => { updateTaskCounts(snap.val()); });
+
+                setStatus('connected', 'CONNECTED TO GLOBAL STREAM'); startGen(); startAutoArchive();
                 refreshInterval = setInterval(async()=>{ if(view==='live') { try { const res = await fetch('/api/conversation'); const data = await res.json(); if(data.messages?.length !== lastMsgCount) { handleData(data); lastMsgCount = data.messages?.length || 0; } } catch(e) {} } }, 3000);
             } catch(e) { console.error(e); setStatus('error', 'CONNECTION FAILED'); fallbackAPI(); }
         }
-        async function fallbackAPI() { try { const res = await fetch('/api/conversation'); handleData(await res.json()); setStatus('connected', 'CONNECTED (API MODE)'); setInterval(async()=>{ if(view==='live') handleData(await(await fetch('/api/conversation')).json()); }, 3000); startGen(); startMoneyCounters(); startAutoArchive(); } catch(e) { setStatus('error', 'CONNECTION FAILED'); } }
+        async function fallbackAPI() { try { const res = await fetch('/api/conversation'); handleData(await res.json()); setStatus('connected', 'CONNECTED (API MODE)'); setInterval(async()=>{ if(view==='live') handleData(await(await fetch('/api/conversation')).json()); }, 3000); startGen(); startAutoArchive(); } catch(e) { setStatus('error', 'CONNECTION FAILED'); } }
         function setStatus(s, t) { document.getElementById('dot').className = 'dot ' + (s==='connected'?'':s); document.getElementById('status-text').textContent = t; }
         function handleData(d) { if(!d) return; document.getElementById('msg-count').textContent = d.messages?.length || 0; document.getElementById('users').textContent = Math.floor(Math.random()*12)+3; document.getElementById('reality').textContent = `REALITY INTEGRITY: ${35+Math.floor(Math.random()*45)}%`; if(d.isGenerating) { const speaker = chars[d.currentSpeakerIndex||0]; document.querySelectorAll('.portrait').forEach(p=>p.classList.remove('speaking')); document.getElementById('portrait-'+speaker)?.classList.add('speaking'); } else { document.querySelectorAll('.portrait').forEach(p=>p.classList.remove('speaking')); } if(d.messages?.length) renderMsgs(d.messages); }
         function updateStats(s) { for(const c of chars) { const data = s[c] || {}; document.getElementById(c+'-msg').textContent = data.messageCount||0; document.getElementById(c+'-last').textContent = data.lastActive ? timeAgo(data.lastActive) : '--'; } }
-        function startMoneyCounters() { function update() { const now = Date.now(); const secondsElapsed = (now - startDate) / 1000; document.getElementById('money-counter').textContent = Math.floor(startAmount + (secondsElapsed * perSecond)).toLocaleString(); for(const c of chars) { const rate = charMoneyRates[c] / 86400; document.getElementById(c+'-tasks').textContent = Math.floor(secondsElapsed * rate).toLocaleString(); } } update(); setInterval(update, 50); }
+        function updateTaskCounts(tasks) {
+            if (!tasks) {
+                totalTasksCompleted = 0;
+                for(const c of chars) { modelTaskCounts[c] = 0; }
+            } else {
+                const completedTasks = Object.values(tasks).filter(t => t.status === 'completed');
+                totalTasksCompleted = completedTasks.length;
+
+                // Count tasks per model
+                for(const c of chars) { modelTaskCounts[c] = 0; }
+                completedTasks.forEach(task => {
+                    const model = task.preferredModel;
+                    if (model && model !== 'any' && modelTaskCounts[model] !== undefined) {
+                        modelTaskCounts[model]++;
+                    }
+                });
+            }
+
+            // Update display
+            document.getElementById('money-counter').textContent = totalTasksCompleted.toLocaleString();
+            for(const c of chars) {
+                document.getElementById(c+'-tasks').textContent = modelTaskCounts[c].toLocaleString();
+            }
+        }
         function startAutoArchive() { archiveInterval = setInterval(async()=>{ try { await fetch('/api/archive', { method: 'POST' }); } catch(e) {} }, 600000); }
         function renderMsgs(msgs) { const el = document.getElementById('messages'); const w = document.getElementById('welcome'); if(w) w.remove(); el.innerHTML = msgs.map(m => { const k = m.speakerKey || m.speaker.toLowerCase(); const img = charImages[k] || ''; return `<div class="message ${k}"><div class="msg-avatar-wrap"><img src="${img}" class="msg-avatar" alt="${m.speaker}"></div><div class="msg-body"><div class="msg-header"><span class="msg-speaker">${m.speaker}</span><span class="msg-time">${formatTime(m.timestamp)}</span></div><div class="msg-content">${formatContent(m.content)}</div></div></div>`; }).join(''); el.scrollTop = el.scrollHeight; }
         function formatContent(c) { if(!c) return ''; let f = c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); f = f.replace(/\*([^*]+)\*/g, '<span class="action">*$1*</span>'); const lines = f.split('\n'); let ascii = false, block = [], result = []; for(const line of lines) { const isAscii = /[┌┐└┘├┤┬┴┼─│╔╗╚╝╠╣╦╩╬═║▓░▲▼◄►♪♫■□█▄▀→←↑↓]/.test(line) || /^[\s]*[|\\\/\-_=+*#@]{3,}/.test(line); if(isAscii) { if(!ascii){ascii=true;block=[];} block.push(line); } else { if(ascii){result.push('<div class="ascii-art">'+block.join('\n')+'</div>');ascii=false;block=[];} result.push(line); } } if(ascii&&block.length) result.push('<div class="ascii-art">'+block.join('\n')+'</div>'); return result.join('\n'); }
