@@ -87,8 +87,32 @@
         </div>
 
         <div class="section">
+            <div class="section-title">POST TWEET TO LIVE FEED</div>
+            <p style="color: var(--text2); font-size: 11px; margin-bottom: 15px;">Post a tweet announcement to the live conversation feed from any Claude model.</p>
+
+            <div class="form-group">
+                <label class="form-label">SELECT MODEL</label>
+                <select id="tweet-model" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px;font-family:inherit;font-size:12px;">
+                    <option value="opus">OPUS</option>
+                    <option value="sonnet">SONNET</option>
+                    <option value="haiku">HAIKU</option>
+                    <option value="claude3">CLAUDE3</option>
+                    <option value="claude2">CLAUDE2</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label class="form-label">TWEET URL</label>
+                <input type="text" id="tweet-url" placeholder="https://x.com/..." style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px;font-family:inherit;font-size:12px;">
+            </div>
+
+            <button class="btn" onclick="postTweet()">POST TWEET TO FEED</button>
+            <div id="tweet-status"></div>
+        </div>
+
+        <div class="section">
             <div class="section-title">TASK MANAGEMENT</div>
-            <p style="color: var(--text2); font-size: 11px; margin-bottom: 10px;">Manage user-submitted tasks. Mark tasks as completed to update the queue.</p>
+            <p style="color: var(--text2); font-size: 11px; margin-bottom: 10px;">Manage user-submitted tasks. Upload images directly or provide URLs for completion outputs.</p>
             <div id="task-management" class="event-list">
                 <div style="color: var(--text3);">Loading tasks...</div>
             </div>
@@ -273,12 +297,13 @@
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
                                     <div>
                                         <label style="display:block;font-size:10px;color:var(--text3);margin-bottom:4px;">Output Type:</label>
-                                        <select id="type-${task.id}" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px;font-family:inherit;font-size:11px;">
+                                        <select id="type-${task.id}" onchange="toggleUploadMethod('${task.id}')" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px;font-family:inherit;font-size:11px;">
+                                            <option value="image-upload">Image Upload</option>
                                             <option value="url">Image/Video URL</option>
                                             <option value="code">Code</option>
                                         </select>
                                     </div>
-                                    <div>
+                                    <div id="mediatype-container-${task.id}" style="display:none;">
                                         <label style="display:block;font-size:10px;color:var(--text3);margin-bottom:4px;">Media Type (if URL):</label>
                                         <select id="mediatype-${task.id}" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px;font-family:inherit;font-size:11px;">
                                             <option value="image">Image</option>
@@ -286,7 +311,12 @@
                                         </select>
                                     </div>
                                 </div>
-                                <div style="margin-bottom:10px;">
+                                <div id="upload-container-${task.id}" style="margin-bottom:10px;">
+                                    <label style="display:block;font-size:10px;color:var(--text3);margin-bottom:4px;">Upload Image:</label>
+                                    <input type="file" id="file-${task.id}" accept="image/*" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px;font-family:inherit;font-size:11px;">
+                                    <div id="preview-${task.id}" style="margin-top:8px;"></div>
+                                </div>
+                                <div id="url-container-${task.id}" style="margin-bottom:10px;display:none;">
                                     <label style="display:block;font-size:10px;color:var(--text3);margin-bottom:4px;">Content (URL or Code):</label>
                                     <textarea id="content-${task.id}" placeholder="Enter URL or paste code here..." style="width:100%;min-height:80px;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px;font-family:inherit;font-size:11px;resize:vertical;"></textarea>
                                 </div>
@@ -332,51 +362,193 @@
             });
         }
 
+        // Toggle upload method
+        window.toggleUploadMethod = function(taskId) {
+            const typeSelect = document.getElementById(`type-${taskId}`);
+            const uploadContainer = document.getElementById(`upload-container-${taskId}`);
+            const urlContainer = document.getElementById(`url-container-${taskId}`);
+            const mediatypeContainer = document.getElementById(`mediatype-container-${taskId}`);
+
+            if (typeSelect.value === 'image-upload') {
+                uploadContainer.style.display = 'block';
+                urlContainer.style.display = 'none';
+                mediatypeContainer.style.display = 'none';
+            } else if (typeSelect.value === 'url') {
+                uploadContainer.style.display = 'none';
+                urlContainer.style.display = 'block';
+                mediatypeContainer.style.display = 'block';
+            } else {
+                uploadContainer.style.display = 'none';
+                urlContainer.style.display = 'block';
+                mediatypeContainer.style.display = 'none';
+            }
+        };
+
         // Complete a task with output
         window.completeTaskWithOutput = async function(taskId) {
             const typeSelect = document.getElementById(`type-${taskId}`);
-            const mediaTypeSelect = document.getElementById(`mediatype-${taskId}`);
-            const contentInput = document.getElementById(`content-${taskId}`);
-
-            if (!typeSelect || !contentInput) {
-                alert('Error: Could not find form elements');
-                return;
-            }
-
             const outputType = typeSelect.value;
-            const content = contentInput.value.trim();
-
-            if (!content) {
-                alert('Please provide completion output (URL or code)');
-                return;
-            }
 
             try {
                 const completionData = {};
 
-                if (outputType === 'url') {
+                if (outputType === 'image-upload') {
+                    const fileInput = document.getElementById(`file-${taskId}`);
+                    if (!fileInput || !fileInput.files || !fileInput.files[0]) {
+                        alert('Please select an image to upload');
+                        return;
+                    }
+
+                    // Convert image to base64
+                    const file = fileInput.files[0];
+                    const reader = new FileReader();
+
+                    reader.onload = async function(e) {
+                        completionData.type = 'image';
+                        completionData.url = e.target.result; // base64 data URL
+
+                        await set(ref(db, `somali-backrooms/tasks/${taskId}`), {
+                            ...((await get(ref(db, `somali-backrooms/tasks/${taskId}`))).val()),
+                            status: 'completed',
+                            completedAt: Date.now(),
+                            completionData: completionData
+                        });
+
+                        // Inject event about task completion
+                        await push(ref(db, 'somali-backrooms/customEvents'), {
+                            text: `TASK COMPLETED: The team just finished a user-submitted task. Discussing the results and next steps.`,
+                            addedAt: Date.now()
+                        });
+                    };
+
+                    reader.readAsDataURL(file);
+
+                } else if (outputType === 'url') {
+                    const mediaTypeSelect = document.getElementById(`mediatype-${taskId}`);
+                    const contentInput = document.getElementById(`content-${taskId}`);
+                    const content = contentInput.value.trim();
+
+                    if (!content) {
+                        alert('Please provide completion output (URL or code)');
+                        return;
+                    }
+
                     const mediaType = mediaTypeSelect.value;
                     completionData.type = mediaType;
                     completionData.url = content;
+
+                    await set(ref(db, `somali-backrooms/tasks/${taskId}`), {
+                        ...((await get(ref(db, `somali-backrooms/tasks/${taskId}`))).val()),
+                        status: 'completed',
+                        completedAt: Date.now(),
+                        completionData: completionData
+                    });
+
+                    // Inject event about task completion
+                    await push(ref(db, 'somali-backrooms/customEvents'), {
+                        text: `TASK COMPLETED: The team just finished a user-submitted task. Discussing the results and next steps.`,
+                        addedAt: Date.now()
+                    });
+
                 } else if (outputType === 'code') {
+                    const contentInput = document.getElementById(`content-${taskId}`);
+                    const content = contentInput.value.trim();
+
+                    if (!content) {
+                        alert('Please provide code content');
+                        return;
+                    }
+
                     completionData.type = 'code';
                     completionData.content = content;
+
+                    await set(ref(db, `somali-backrooms/tasks/${taskId}`), {
+                        ...((await get(ref(db, `somali-backrooms/tasks/${taskId}`))).val()),
+                        status: 'completed',
+                        completedAt: Date.now(),
+                        completionData: completionData
+                    });
+
+                    // Inject event about task completion
+                    await push(ref(db, 'somali-backrooms/customEvents'), {
+                        text: `TASK COMPLETED: The team just finished a user-submitted task. Discussing the results and next steps.`,
+                        addedAt: Date.now()
+                    });
                 }
-
-                await set(ref(db, `somali-backrooms/tasks/${taskId}`), {
-                    ...((await get(ref(db, `somali-backrooms/tasks/${taskId}`))).val()),
-                    status: 'completed',
-                    completedAt: Date.now(),
-                    completionData: completionData
-                });
-
-                // Inject event about task completion
-                await push(ref(db, 'somali-backrooms/customEvents'), {
-                    text: `TASK COMPLETED: The team just finished a user-submitted task. Discussing the results and next steps.`,
-                    addedAt: Date.now()
-                });
             } catch (e) {
                 alert('Error completing task: ' + e.message);
+            }
+        };
+
+        // Post tweet to feed
+        window.postTweet = async function() {
+            const modelSelect = document.getElementById('tweet-model');
+            const tweetUrlInput = document.getElementById('tweet-url');
+
+            const model = modelSelect.value;
+            const tweetUrl = tweetUrlInput.value.trim();
+
+            if (!tweetUrl) {
+                alert('Please provide a tweet URL');
+                return;
+            }
+
+            try {
+                const characterNames = {
+                    opus: 'OPUS',
+                    sonnet: 'SONNET',
+                    haiku: 'HAIKU',
+                    claude3: 'CLAUDE3',
+                    claude2: 'CLAUDE2'
+                };
+
+                const characterColors = {
+                    opus: '#418fde',
+                    sonnet: '#ff6b9d',
+                    haiku: '#ffd700',
+                    claude3: '#00bfff',
+                    claude2: '#da70d6'
+                };
+
+                const now = Date.now();
+                const newMessage = {
+                    id: `msg_${now}_${Math.random().toString(36).substr(2, 9)}`,
+                    speaker: characterNames[model],
+                    speakerKey: model,
+                    content: `📢 [TWEET POSTED]\n\nJust shared an update on X: ${tweetUrl}`,
+                    timestamp: now,
+                    color: characterColors[model]
+                };
+
+                // Get current conversation
+                const conversationRef = ref(db, 'somali-backrooms/conversation');
+                const snapshot = await get(conversationRef);
+                const data = snapshot.val() || { messages: [], currentSpeakerIndex: 0, messageCount: 0 };
+
+                // Add new message
+                const updatedMessages = [...(data.messages || []), newMessage].slice(-100);
+
+                await set(conversationRef, {
+                    ...data,
+                    messages: updatedMessages,
+                    messageCount: (data.messageCount || 0) + 1,
+                    lastMessageTime: now
+                });
+
+                // Update stats
+                const statsRef = ref(db, `somali-backrooms/stats/${model}`);
+                const statsSnap = await get(statsRef);
+                const stats = statsSnap.val() || { messageCount: 0 };
+                await set(statsRef, {
+                    messageCount: stats.messageCount + 1,
+                    lastActive: now
+                });
+
+                tweetUrlInput.value = '';
+                showStatus('tweet-status', 'Tweet posted to live feed!', 'success');
+
+            } catch (e) {
+                showStatus('tweet-status', 'Error: ' + e.message, 'error');
             }
         };
 
