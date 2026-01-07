@@ -233,8 +233,8 @@
         const twitterIcon = 'https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png';
         const youtubeIcon = 'https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521499db987f2a81023366_githu%20(1).png';
         const startDate = new Date('2025-01-01T00:00:00Z').getTime();
-        const startAmount = 0, dailyIncrease = 1000, perSecond = dailyIncrease / 86400;
-        const charMoneyRates = { opus: 300, sonnet: 250, haiku: 150, claude3: 200, claude2: 100 };
+        const startAmount = 0, dailyIncrease = 541, perSecond = dailyIncrease / 86400;
+        const charMoneyRates = { opus: 120, sonnet: 110, haiku: 95, claude3: 108, claude2: 108 };
 
         async function init() {
             try { const res = await fetch('/api/conversation'); const data = await res.json(); handleData(data); lastMsgCount = data.messages?.length || 0; } catch(e) {}
