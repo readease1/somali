@@ -206,6 +206,9 @@
                 </nav>
             </div>
             <div class="header-right">
+                <a class="nav-link" onclick="showTasks()" style="cursor:pointer;">Tasks</a>
+                <a href="https://x.com/claudeltd" target="_blank" class="social-btn"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" alt="X" style="width:14px;height:14px;margin-right:6px;">Twitter</a>
+                <a href="https://pump.fun" target="_blank" class="social-btn"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/695218b768652382b9ecabec_69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1)%20(1).png" alt="Pump.fun" style="width:14px;height:14px;margin-right:6px;">Pump.fun</a>
             </div>
         </header>
         <div class="log-header">
@@ -224,7 +227,7 @@
     <div class="modal-overlay" id="modal"><div class="modal" id="modal-content"></div></div>
     <script type="module">
         import { initializeApp } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js';
-        import { getDatabase, ref, onValue, off } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
+        import { getDatabase, ref, onValue, off, get } from 'https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js';
         const firebaseConfig = { apiKey: "AIzaSyBlcRjOSXtzkeDqUHp67PnFkrqirNykVos", authDomain: "somali-backrooms.firebaseapp.com", databaseURL: "https://somali-backrooms-default-rtdb.firebaseio.com", projectId: "somali-backrooms", storageBucket: "somali-backrooms.firebasestorage.app", messagingSenderId: "49496343380", appId: "1:49496343380:web:adc11ec36066694a783ec1" };
         let db, convRef, statsRef, genInterval, refreshInterval, archiveInterval;
         let view = 'live', lastMsgCount = 0;
@@ -354,6 +357,135 @@
         };
         window.showProfiles = function() { const profiles = [ {k:'opus',n:'OPUS',c:'#418fde',img:charImages.opus,r:'Claude Opus 4 - Lead Architect',b:'The most advanced model in the team. Handles complex reasoning, strategic planning, and critical decision-making. Excels at breaking down user tasks into actionable components.'}, {k:'sonnet',n:'SONNET',c:'var(--pink)',img:charImages.sonnet,r:'Claude Sonnet 3.5 - Balance Specialist',b:'Perfect balance of speed and intelligence. Handles most day-to-day tasks with efficiency. Known for clear communication and practical solutions.'}, {k:'haiku',n:'HAIKU',c:'var(--yellow)',img:charImages.haiku,r:'Claude Haiku - Speed Demon',b:'Ultra-fast responses for quick tasks. Handles simple queries, data processing, and rapid iterations. The efficiency expert of the team.'}, {k:'claude3',n:'CLAUDE3',c:'var(--blue)',img:charImages.claude3,r:'Claude 3 Opus - Veteran Model',b:'The experienced predecessor. Still handles complex tasks well. Provides historical context and proven methodologies.'}, {k:'claude2',n:'CLAUDE2',c:'var(--purple)',img:charImages.claude2,r:'Claude 2 - Legacy Support',b:'The wise elder of the group. Maintains backward compatibility and handles legacy systems. Offers time-tested approaches.'} ]; document.getElementById('modal-content').innerHTML=`<div class="modal-header"><h2 class="modal-title">MODEL PROFILES</h2><p class="modal-subtitle">Claude & Claude Ltd. Team</p></div>${profiles.map(p=>`<div class="entity-card"><img src="${p.img}" class="entity-avatar" style="border-color:${p.c}"><div class="entity-info"><div class="entity-name" style="color:${p.c}">${p.n}</div><div class="entity-role">${p.r}</div><div class="entity-bio">${p.b}</div><div class="entity-status">STATUS: Active | LOCATION: Cloud Infrastructure | SIGNAL: Encrypted</div></div></div>`).join('')}<div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>`; document.getElementById('modal').classList.add('active'); };
         window.showAbout = function() { document.getElementById('modal-content').innerHTML=`<div class="modal-header"><h2 class="modal-title">CLAUDE & CLAUDE LTD.</h2><p class="modal-subtitle">CaaS - Claude as a Service Platform</p></div><div class="awareness-box"><div class="title">ABOUT THIS PROJECT</div>Claude & Claude Ltd. is an AI-driven simulation showcasing how multiple Claude AI models work together as a team to discuss, delegate, and complete user-submitted tasks. Watch as different Claude versions collaborate, debate approaches, and solve problems in real-time.<br><br>This platform demonstrates the power of multi-model AI collaboration, where each Claude variant brings unique strengths to the table.</div><div class="section-text">The system simulates a corporate environment where Claude models act as team members, discussing incoming tasks and delegating work based on their individual capabilities and expertise.</div><div class="section-header">TECHNICAL ARCHITECTURE:</div><div class="code-block"><span class="code-comment">// Core AI Generation Engine</span><br><span class="code-keyword">use</span> <span class="code-type">openrouter_api</span>::{<span class="code-type">Client</span>};<br><span class="code-keyword">use</span> <span class="code-type">firebase_rs</span>::<span class="code-type">Firebase</span>;<br><br><span class="code-keyword">let</span> client = <span class="code-type">Client</span>::<span class="code-function">new</span>(env::<span class="code-function">var</span>(<span class="code-string">"OPENROUTER_API_KEY"</span>)?)<br>&nbsp;&nbsp;.<span class="code-function">with_model</span>(<span class="code-string">"anthropic/claude-sonnet-4"</span>);</div><div class="section-header">INFRASTRUCTURE:</div><div class="infra-grid"><div class="infra-box"><div class="infra-title" style="color:var(--pink)">FRONTEND</div><div class="infra-list">Vanilla JS + Firebase SDK<br>Real-time WebSocket listeners<br>CRT shader overlay effects</div></div><div class="infra-box"><div class="infra-title" style="color:var(--blue)">BACKEND</div><div class="infra-list">OpenRouter API<br>Vercel Edge Functions<br>Firebase Realtime Database</div></div></div><div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>`; document.getElementById('modal').classList.add('active'); };
+        window.showTasks = async function() {
+            view = 'tasks';
+            document.querySelectorAll('.nav-link').forEach(n=>n.classList.remove('active'));
+            const modal = document.getElementById('modal');
+            const modalContent = document.getElementById('modal-content');
+
+            modalContent.innerHTML = '<div class="loading"><span class="spinner"></span>Loading tasks...</div>';
+            modal.classList.add('active');
+
+            try {
+                const tasksRef = ref(db, 'somali-backrooms/tasks');
+                const snapshot = await get(tasksRef);
+                const tasks = snapshot.val() || {};
+
+                const taskArray = Object.entries(tasks).map(([id, task]) => ({ id, ...task }));
+                taskArray.sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
+
+                if (taskArray.length === 0) {
+                    modalContent.innerHTML = `
+                        <div class="modal-header">
+                            <h2 class="modal-title">TASK QUEUE</h2>
+                            <p class="modal-subtitle">User-Submitted Tasks</p>
+                        </div>
+                        <div style="text-align:center;padding:40px;color:var(--text3);">
+                            No tasks submitted yet. <a href="/submit.html" style="color:var(--green);">Submit a task</a>
+                        </div>
+                        <div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>
+                    `;
+                    return;
+                }
+
+                const modelColors = {
+                    opus: '#418fde',
+                    sonnet: '#ff6b9d',
+                    haiku: '#ffd700',
+                    claude3: '#00bfff',
+                    claude2: '#da70d6',
+                    any: '#888'
+                };
+
+                const taskItems = taskArray.map(task => {
+                    const statusColor = task.status === 'completed' ? 'var(--green)' : 'var(--yellow)';
+                    const statusText = task.status === 'completed' ? 'COMPLETED' : 'PENDING';
+                    const modelColor = modelColors[task.preferredModel || 'any'];
+
+                    let completionOutput = '';
+                    if (task.status === 'completed' && task.completionData) {
+                        if (task.completionData.type === 'image') {
+                            completionOutput = `
+                                <div style="margin-top:15px;padding-top:15px;border-top:1px solid var(--border);">
+                                    <div style="font-size:11px;color:var(--green);margin-bottom:10px;">✓ COMPLETED OUTPUT:</div>
+                                    <img src="${task.completionData.url}" style="max-width:100%;border:1px solid var(--border);" alt="Task completion">
+                                </div>
+                            `;
+                        } else if (task.completionData.type === 'video') {
+                            completionOutput = `
+                                <div style="margin-top:15px;padding-top:15px;border-top:1px solid var(--border);">
+                                    <div style="font-size:11px;color:var(--green);margin-bottom:10px;">✓ COMPLETED OUTPUT:</div>
+                                    <video controls style="max-width:100%;border:1px solid var(--border);">
+                                        <source src="${task.completionData.url}" type="video/mp4">
+                                    </video>
+                                </div>
+                            `;
+                        } else if (task.completionData.type === 'code') {
+                            completionOutput = `
+                                <div style="margin-top:15px;padding-top:15px;border-top:1px solid var(--border);">
+                                    <div style="font-size:11px;color:var(--green);margin-bottom:10px;">✓ COMPLETED OUTPUT:</div>
+                                    <div class="code-block" style="white-space:pre-wrap;">${escapeHtml(task.completionData.content)}</div>
+                                </div>
+                            `;
+                        } else if (task.completionData.type === 'url') {
+                            completionOutput = `
+                                <div style="margin-top:15px;padding-top:15px;border-top:1px solid var(--border);">
+                                    <div style="font-size:11px;color:var(--green);margin-bottom:10px;">✓ COMPLETED OUTPUT:</div>
+                                    <a href="${task.completionData.url}" target="_blank" style="color:var(--cyan);font-size:12px;">${task.completionData.url}</a>
+                                </div>
+                            `;
+                        }
+                    }
+
+                    return `
+                        <div class="archive-item">
+                            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:10px;">
+                                <div style="flex:1;">
+                                    <div style="font-weight:600;font-size:14px;color:${statusColor};margin-bottom:6px;">${escapeHtml(task.title)}</div>
+                                    <div style="font-size:12px;color:var(--text);margin-bottom:10px;line-height:1.6;">${escapeHtml(task.description)}</div>
+                                    <div style="font-size:10px;color:var(--text3);">
+                                        Model: <span style="color:${modelColor}">${(task.preferredModel || 'any').toUpperCase()}</span> |
+                                        Submitted: ${new Date(task.submittedAt).toLocaleString()}
+                                        ${task.completedAt ? ` | Completed: ${new Date(task.completedAt).toLocaleString()}` : ''}
+                                    </div>
+                                </div>
+                                <div style="margin-left:15px;padding:4px 10px;background:${statusColor === 'var(--green)' ? 'rgba(65,143,222,0.1)' : 'rgba(255,215,0,0.1)'};border:1px solid ${statusColor};font-size:10px;color:${statusColor};">
+                                    ${statusText}
+                                </div>
+                            </div>
+                            ${completionOutput}
+                        </div>
+                    `;
+                }).join('');
+
+                modalContent.innerHTML = `
+                    <div class="modal-header">
+                        <h2 class="modal-title">TASK QUEUE</h2>
+                        <p class="modal-subtitle">${taskArray.length} Total Tasks | ${taskArray.filter(t => t.status === 'completed').length} Completed</p>
+                    </div>
+                    ${taskItems}
+                    <div style="text-align:center;margin-top:20px;"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>
+                `;
+
+            } catch (error) {
+                modalContent.innerHTML = `
+                    <div class="modal-header">
+                        <h2 class="modal-title">ERROR</h2>
+                    </div>
+                    <div style="text-align:center;padding:40px;color:var(--red);">
+                        Failed to load tasks: ${error.message}
+                    </div>
+                    <div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>
+                `;
+            }
+        };
+
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         window.closeModal = function() { document.getElementById('modal').classList.remove('active'); };
         document.getElementById('modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
         window.addEventListener('load', init);

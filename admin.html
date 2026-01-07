@@ -264,9 +264,53 @@
 
                 container.innerHTML = taskArray.map(task => {
                     const statusColor = task.status === 'completed' ? 'var(--green)' : 'var(--yellow)';
-                    const actionBtn = task.status === 'pending'
-                        ? `<button class="btn" style="margin:0;padding:6px 12px;" onclick="completeTask('${task.id}')">Mark Complete</button>`
-                        : '<span style="color:var(--green);font-size:10px;">✓ Completed</span>';
+
+                    let completionSection = '';
+                    if (task.status === 'pending') {
+                        completionSection = `
+                            <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
+                                <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">COMPLETION OUTPUT:</div>
+                                <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
+                                    <div>
+                                        <label style="display:block;font-size:10px;color:var(--text3);margin-bottom:4px;">Output Type:</label>
+                                        <select id="type-${task.id}" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px;font-family:inherit;font-size:11px;">
+                                            <option value="url">Image/Video URL</option>
+                                            <option value="code">Code</option>
+                                        </select>
+                                    </div>
+                                    <div>
+                                        <label style="display:block;font-size:10px;color:var(--text3);margin-bottom:4px;">Media Type (if URL):</label>
+                                        <select id="mediatype-${task.id}" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px;font-family:inherit;font-size:11px;">
+                                            <option value="image">Image</option>
+                                            <option value="video">Video</option>
+                                        </select>
+                                    </div>
+                                </div>
+                                <div style="margin-bottom:10px;">
+                                    <label style="display:block;font-size:10px;color:var(--text3);margin-bottom:4px;">Content (URL or Code):</label>
+                                    <textarea id="content-${task.id}" placeholder="Enter URL or paste code here..." style="width:100%;min-height:80px;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:8px;font-family:inherit;font-size:11px;resize:vertical;"></textarea>
+                                </div>
+                                <button class="btn" style="margin:0;padding:8px 16px;width:100%;" onclick="completeTaskWithOutput('${task.id}')">✓ Mark Complete with Output</button>
+                            </div>
+                        `;
+                    } else {
+                        let outputPreview = '';
+                        if (task.completionData) {
+                            if (task.completionData.type === 'image') {
+                                outputPreview = `<div style="margin-top:8px;"><img src="${task.completionData.url}" style="max-width:200px;border:1px solid var(--border);"></div>`;
+                            } else if (task.completionData.type === 'video') {
+                                outputPreview = `<div style="margin-top:8px;"><video src="${task.completionData.url}" style="max-width:200px;border:1px solid var(--border);" controls></video></div>`;
+                            } else if (task.completionData.type === 'code') {
+                                outputPreview = `<div style="margin-top:8px;font-size:10px;color:var(--text3);">Code output attached</div>`;
+                            }
+                        }
+                        completionSection = `
+                            <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
+                                <span style="color:var(--green);font-size:10px;">✓ Completed</span>
+                                ${outputPreview}
+                            </div>
+                        `;
+                    }
 
                     return `
                         <div class="event-item" style="display:block;">
@@ -280,21 +324,51 @@
                                         ${task.completedAt ? ` | Completed: ${new Date(task.completedAt).toLocaleString()}` : ''}
                                     </div>
                                 </div>
-                                <div style="margin-left:10px;">
-                                    ${actionBtn}
-                                </div>
                             </div>
+                            ${completionSection}
                         </div>
                     `;
                 }).join('');
             });
         }
 
-        // Complete a task
-        window.completeTask = async function(taskId) {
+        // Complete a task with output
+        window.completeTaskWithOutput = async function(taskId) {
+            const typeSelect = document.getElementById(`type-${taskId}`);
+            const mediaTypeSelect = document.getElementById(`mediatype-${taskId}`);
+            const contentInput = document.getElementById(`content-${taskId}`);
+
+            if (!typeSelect || !contentInput) {
+                alert('Error: Could not find form elements');
+                return;
+            }
+
+            const outputType = typeSelect.value;
+            const content = contentInput.value.trim();
+
+            if (!content) {
+                alert('Please provide completion output (URL or code)');
+                return;
+            }
+
             try {
-                await set(ref(db, `somali-backrooms/tasks/${taskId}/status`), 'completed');
-                await set(ref(db, `somali-backrooms/tasks/${taskId}/completedAt`), Date.now());
+                const completionData = {};
+
+                if (outputType === 'url') {
+                    const mediaType = mediaTypeSelect.value;
+                    completionData.type = mediaType;
+                    completionData.url = content;
+                } else if (outputType === 'code') {
+                    completionData.type = 'code';
+                    completionData.content = content;
+                }
+
+                await set(ref(db, `somali-backrooms/tasks/${taskId}`), {
+                    ...((await get(ref(db, `somali-backrooms/tasks/${taskId}`))).val()),
+                    status: 'completed',
+                    completedAt: Date.now(),
+                    completionData: completionData
+                });
 
                 // Inject event about task completion
                 await push(ref(db, 'somali-backrooms/customEvents'), {
