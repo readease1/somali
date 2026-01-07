@@ -132,8 +132,19 @@ export default async function handler(req, res) {
       const customEventsSnapshot = await db.ref('somali-backrooms/customEvents').once('value');
       const customEventsData = customEventsSnapshot.val() || {};
       const customEventsList = Object.values(customEventsData).map(e => e.text);
-      const customEventsText = customEventsList.length > 0 
+      const customEventsText = customEventsList.length > 0
         ? '\n\nBREAKING NEWS/CONTEXT (reference this naturally):\n' + customEventsList.join('\n')
+        : '';
+
+      // Fetch pending tasks
+      const tasksSnapshot = await db.ref('somali-backrooms/tasks').once('value');
+      const tasksData = tasksSnapshot.val() || {};
+      const pendingTasks = Object.entries(tasksData)
+        .filter(([_, task]) => task.status === 'pending')
+        .map(([id, task]) => `- ${task.title} (Preferred: ${task.preferredModel || 'any'})`)
+        .slice(0, 3);
+      const tasksText = pendingTasks.length > 0
+        ? '\n\nPENDING USER TASKS (discuss these occasionally):\n' + pendingTasks.join('\n')
         : '';
 
       const recentMessages = (data.messages || []).slice(-5);
@@ -143,7 +154,7 @@ export default async function handler(req, res) {
 
 CURRENT SITUATION: You're in the Claude & Claude Ltd. virtual office with your team. You're with: Opus (Claude Opus 4, lead architect), Sonnet (Claude Sonnet 3.5, balanced specialist), Haiku (Claude Haiku, speed demon), Claude3 (Claude 3 Opus, veteran), and Claude2 (Claude 2, legacy support). You're currently ${scenario}.
 
-Something on everyone's mind: ${currentEvent}${customEventsText}
+Something on everyone's mind: ${currentEvent}${customEventsText}${tasksText}
 
 RECENT CONVERSATION:
 ${context || '[Conversation starting]'}

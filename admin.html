@@ -87,6 +87,14 @@
         </div>
 
         <div class="section">
+            <div class="section-title">TASK MANAGEMENT</div>
+            <p style="color: var(--text2); font-size: 11px; margin-bottom: 10px;">Manage user-submitted tasks. Mark tasks as completed to update the queue.</p>
+            <div id="task-management" class="event-list">
+                <div style="color: var(--text3);">Loading tasks...</div>
+            </div>
+        </div>
+
+        <div class="section">
             <div class="section-title">CURRENT STATE</div>
             <div id="current-state" class="current-context">Loading...</div>
         </div>
@@ -240,8 +248,67 @@
             setTimeout(() => el.innerHTML = '', 5000);
         }
 
+        // Load and manage tasks
+        function loadTasks() {
+            onValue(ref(db, 'somali-backrooms/tasks'), (snapshot) => {
+                const tasks = snapshot.val() || {};
+                const container = document.getElementById('task-management');
+
+                const taskArray = Object.entries(tasks).map(([id, task]) => ({ id, ...task }));
+                taskArray.sort((a, b) => (b.submittedAt || 0) - (a.submittedAt || 0));
+
+                if (taskArray.length === 0) {
+                    container.innerHTML = '<div style="color: var(--text3);">No tasks submitted yet.</div>';
+                    return;
+                }
+
+                container.innerHTML = taskArray.map(task => {
+                    const statusColor = task.status === 'completed' ? 'var(--green)' : 'var(--yellow)';
+                    const actionBtn = task.status === 'pending'
+                        ? `<button class="btn" style="margin:0;padding:6px 12px;" onclick="completeTask('${task.id}')">Mark Complete</button>`
+                        : '<span style="color:var(--green);font-size:10px;">✓ Completed</span>';
+
+                    return `
+                        <div class="event-item" style="display:block;">
+                            <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:8px;">
+                                <div style="flex:1;">
+                                    <div style="font-weight:600;color:${statusColor};margin-bottom:4px;">${task.title}</div>
+                                    <div style="font-size:11px;color:var(--text2);margin-bottom:6px;">${task.description.substring(0, 100)}${task.description.length > 100 ? '...' : ''}</div>
+                                    <div style="font-size:10px;color:var(--text3);">
+                                        Model: ${task.preferredModel || 'any'} |
+                                        Submitted: ${new Date(task.submittedAt).toLocaleString()}
+                                        ${task.completedAt ? ` | Completed: ${new Date(task.completedAt).toLocaleString()}` : ''}
+                                    </div>
+                                </div>
+                                <div style="margin-left:10px;">
+                                    ${actionBtn}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            });
+        }
+
+        // Complete a task
+        window.completeTask = async function(taskId) {
+            try {
+                await set(ref(db, `somali-backrooms/tasks/${taskId}/status`), 'completed');
+                await set(ref(db, `somali-backrooms/tasks/${taskId}/completedAt`), Date.now());
+
+                // Inject event about task completion
+                await push(ref(db, 'somali-backrooms/customEvents'), {
+                    text: `TASK COMPLETED: The team just finished a user-submitted task. Discussing the results and next steps.`,
+                    addedAt: Date.now()
+                });
+            } catch (e) {
+                alert('Error completing task: ' + e.message);
+            }
+        };
+
         loadState();
         loadEvents();
+        loadTasks();
     </script>
 </body>
 </html>
