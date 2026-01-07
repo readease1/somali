@@ -112,8 +112,8 @@ export default async function handler(req, res) {
 
     const now = Date.now();
 
-    if (now - (data.lastMessageTime || 0) < 15000) {
-      return res.status(200).json({ status: 'cooldown', timeRemaining: 15000 - (now - data.lastMessageTime) });
+    if (now - (data.lastMessageTime || 0) < 8000) {
+      return res.status(200).json({ status: 'cooldown', timeRemaining: 8000 - (now - data.lastMessageTime) });
     }
 
     if (data.isGenerating) {
