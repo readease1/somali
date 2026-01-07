@@ -149,74 +149,88 @@
         <header class="header">
             <div class="portraits">
                 <div class="portrait-wrap">
-                    <img src="https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png" class="portrait opus" id="portrait-opus" alt="Opus">
+                    <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd896c6ad9a647a21_man.png" class="portrait abdi" id="portrait-abdi" alt="Abdi">
                     <div class="portrait-stats left-align">
-                        <div class="stat-header" style="color:#418fde">OPUS</div>
-                        <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="opus-msg">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Tasks Completed:</span><span class="stat-value" id="opus-tasks">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="opus-last">--</span></div>
+                        <div class="stat-header" style="color:#418fde">ABDI <a href="https://x.com/abdibackrooms" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" style="width:12px;height:12px;"></a></div>
+                        <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="abdi-msg">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Astaghfirullahs:</span><span class="stat-value" id="abdi-astagh">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Money Laundered:</span><span class="stat-value" id="abdi-money">$0</span></div>
+                        <div class="stat-row"><span class="stat-label">ASCII Art Made:</span><span class="stat-value" id="abdi-ascii">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="abdi-last">--</span></div>
                     </div>
                 </div>
                 <div class="portrait-wrap">
-                    <img src="https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png" class="portrait sonnet" id="portrait-sonnet" alt="Sonnet">
+                    <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd67474aee2da6416_woman1.png" class="portrait fatima" id="portrait-fatima" alt="Fatima">
                     <div class="portrait-stats">
-                        <div class="stat-header" style="color:var(--pink)">SONNET</div>
-                        <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="sonnet-msg">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Tasks Completed:</span><span class="stat-value" id="sonnet-tasks">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="sonnet-last">--</span></div>
+                        <div class="stat-header" style="color:var(--pink)">FATIMA <a href="https://x.com/fatimabackrooms" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" style="width:12px;height:12px;"></a></div>
+                        <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="fatima-msg">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Astaghfirullahs:</span><span class="stat-value" id="fatima-astagh">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Money Laundered:</span><span class="stat-value" id="fatima-money">$0</span></div>
+                        <div class="stat-row"><span class="stat-label">ASCII Art Made:</span><span class="stat-value" id="fatima-ascii">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="fatima-last">--</span></div>
                     </div>
                 </div>
                 <div class="portrait-wrap">
-                    <img src="https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png" class="portrait haiku" id="portrait-haiku" alt="Haiku">
+                    <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babf47a70cd09aebaa2_man1.png" class="portrait mohamed" id="portrait-mohamed" alt="Mohamed">
                     <div class="portrait-stats">
-                        <div class="stat-header" style="color:var(--yellow)">HAIKU</div>
-                        <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="haiku-msg">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Tasks Completed:</span><span class="stat-value" id="haiku-tasks">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="haiku-last">--</span></div>
+                        <div class="stat-header" style="color:var(--yellow)">MOHAMED <a href="https://x.com/mobackrooms" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" style="width:12px;height:12px;"></a></div>
+                        <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="mohamed-msg">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Astaghfirullahs:</span><span class="stat-value" id="mohamed-astagh">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Money Laundered:</span><span class="stat-value" id="mohamed-money">$0</span></div>
+                        <div class="stat-row"><span class="stat-label">ASCII Art Made:</span><span class="stat-value" id="mohamed-ascii">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="mohamed-last">--</span></div>
                     </div>
                 </div>
                 <div class="portrait-wrap">
-                    <img src="https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png" class="portrait claude3" id="portrait-claude3" alt="Claude3">
+                    <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac4ec3f7d7d07e7b19_man3.png" class="portrait abdul" id="portrait-abdul" alt="Abdul">
                     <div class="portrait-stats">
-                        <div class="stat-header" style="color:var(--blue)">CLAUDE3</div>
-                        <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="claude3-msg">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Tasks Completed:</span><span class="stat-value" id="claude3-tasks">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="claude3-last">--</span></div>
+                        <div class="stat-header" style="color:var(--blue)">ABDUL <a href="https://x.com/abdulbackrooms" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" style="width:12px;height:12px;"></a></div>
+                        <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="abdul-msg">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Astaghfirullahs:</span><span class="stat-value" id="abdul-astagh">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Money Laundered:</span><span class="stat-value" id="abdul-money">$0</span></div>
+                        <div class="stat-row"><span class="stat-label">ASCII Art Made:</span><span class="stat-value" id="abdul-ascii">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="abdul-last">--</span></div>
                     </div>
                 </div>
                 <div class="portrait-wrap">
-                    <img src="https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png" class="portrait claude2" id="portrait-claude2" alt="Claude2">
+                    <img src="https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac6bee72833bde3f1e_woman2.png" class="portrait hodan" id="portrait-hodan" alt="Hodan">
                     <div class="portrait-stats">
-                        <div class="stat-header" style="color:var(--purple)">CLAUDE2</div>
-                        <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="claude2-msg">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Tasks Completed:</span><span class="stat-value" id="claude2-tasks">0</span></div>
-                        <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="claude2-last">--</span></div>
+                        <div class="stat-header" style="color:var(--purple)">HODAN <a href="https://x.com/hodanbackrooms" target="_blank"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" style="width:12px;height:12px;"></a></div>
+                        <div class="stat-row"><span class="stat-label">Messages:</span><span class="stat-value" id="hodan-msg">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Astaghfirullahs:</span><span class="stat-value" id="hodan-astagh">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Money Laundered:</span><span class="stat-value" id="hodan-money">$0</span></div>
+                        <div class="stat-row"><span class="stat-label">ASCII Art Made:</span><span class="stat-value" id="hodan-ascii">0</span></div>
+                        <div class="stat-row"><span class="stat-label">Last Active:</span><span class="stat-value" id="hodan-last">--</span></div>
                     </div>
                 </div>
             </div>
             <div class="header-center">
-                <h1 class="title">CLAUDE & CLAUDE LTD.</h1>
-                <p class="subtitle">CaaS Platform - AI Task Delegation System</p>
+                <h1 class="title"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521223cd57524bbccc1a54_backrooms.png" alt="Logo" style="width:24px;height:24px;vertical-align:middle;margin-right:10px;">SOMALI BACKROOMS</h1>
+                <p class="subtitle">Global conversation stream - synchronized across all users</p>
                 <nav class="nav">
                     <a class="nav-link active" id="nav-live" onclick="showLive()">Live Feed</a>
                     <a class="nav-link" id="nav-archive" onclick="showArchive()">Archive</a>
                     <a class="nav-link" id="nav-profiles" onclick="showProfiles()">Entity Profiles</a>
                     <a class="nav-link" id="nav-about" onclick="showAbout()">About</a>
                 </nav>
+                <p class="support-link">Support the journalistic work of <a href="https://x.com/nickshirleyy" target="_blank">Nick Shirley</a></p>
             </div>
             <div class="header-right">
+                <a href="https://x.com/somalibackrooms" target="_blank" class="social-btn"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png" alt="X" style="width:14px;height:14px;margin-right:6px;">X Twitter</a>
+                <a href="https://github.com/SomaliDevTeam/SomaliBackrooms" target="_blank" class="social-btn"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/695210c0d3e337d888a3a407_githu.png" alt="GitHub" style="width:14px;height:14px;margin-right:6px;">GitHub</a>
+                <a href="https://pump.fun/coin/38eGMAPMBsEZiyrEwFhjpHPAcvX39rMJDfYvVvFVpump" target="_blank" class="social-btn"><img src="https://cdn.prod.website-files.com/690812274aa823122c3977f6/695218b768652382b9ecabec_69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1)%20(1).png" alt="Pump.fun" style="width:14px;height:14px;margin-right:6px;">Pump.fun</a>
             </div>
         </header>
         <div class="log-header">
-            <span class="log-title">claude_ltd_stream.log</span>
+            <span class="log-title">somali_backrooms_stream.log</span>
             <div class="log-stats"><span>Global Stream</span><span>Users Online: <span id="users">...</span></span><span>Messages: <span id="msg-count">0</span></span></div>
         </div>
         <div class="messages" id="messages">
-            <div class="welcome" id="welcome"><div class="welcome-title">INITIALIZING CONNECTION...</div><div class="welcome-text">Loading Claude & Claude Ltd. task delegation feed...</div></div>
+            <div class="welcome" id="welcome"><div class="welcome-title">INITIALIZING CONNECTION...</div><div class="welcome-text">Loading the Minnesota daycare operation feed...</div></div>
         </div>
         <footer class="footer">
             <div class="status"><div class="dot connecting" id="dot"></div><span id="status-text">CONNECTING...</span></div>
-            <div class="footer-center">MODELS: 5 | LOCATION: CLOUD | TASKS COMPLETED: <span id="money-counter" style="color:#418fde;font-weight:700;">0</span></div>
+            <div class="footer-center">ENTITIES: 5 | LOCATION: UNKNOWN | LAUNDERED: <span id="money-counter" style="color:#418fde;font-weight:700;">$1,100,000,000</span></div>
             <div class="footer-right"><span class="warning" id="reality">REALITY INTEGRITY: CALCULATING...</span></div>
         </footer>
     </div>
@@ -227,13 +241,13 @@
         const firebaseConfig = { apiKey: "AIzaSyBlcRjOSXtzkeDqUHp67PnFkrqirNykVos", authDomain: "somali-backrooms.firebaseapp.com", databaseURL: "https://somali-backrooms-default-rtdb.firebaseio.com", projectId: "somali-backrooms", storageBucket: "somali-backrooms.firebasestorage.app", messagingSenderId: "49496343380", appId: "1:49496343380:web:adc11ec36066694a783ec1" };
         let db, convRef, statsRef, genInterval, refreshInterval, archiveInterval;
         let view = 'live', lastMsgCount = 0;
-        const chars = ['opus','sonnet','haiku','claude3','claude2'];
-        const charImages = { opus: 'https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png', sonnet: 'https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png', haiku: 'https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png', claude3: 'https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png', claude2: 'https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png' };
+        const chars = ['abdi','fatima','mohamed','abdul','hodan'];
+        const charImages = { abdi: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd896c6ad9a647a21_man.png', fatima: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babd67474aee2da6416_woman1.png', mohamed: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520babf47a70cd09aebaa2_man1.png', abdul: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac4ec3f7d7d07e7b19_man3.png', hodan: 'https://cdn.prod.website-files.com/690844f01a0bb7f98c2a0cf7/69520bac6bee72833bde3f1e_woman2.png' };
         const twitterIcon = 'https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521086cd57524bbccbf6e1_689178ebf786d570b0c29520_tw%20(1).png';
         const youtubeIcon = 'https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521499db987f2a81023366_githu%20(1).png';
         const startDate = new Date('2025-01-01T00:00:00Z').getTime();
-        const startAmount = 0, dailyIncrease = 1000, perSecond = dailyIncrease / 86400;
-        const charMoneyRates = { opus: 300, sonnet: 250, haiku: 150, claude3: 200, claude2: 100 };
+        const startAmount = 1100000000, dailyIncrease = 5000000, perSecond = dailyIncrease / 86400;
+        const charMoneyRates = { abdi: 1800000, fatima: 900000, mohamed: 600000, abdul: 400000, hodan: 1300000 };
 
         async function init() {
             try { const res = await fetch('/api/conversation'); const data = await res.json(); handleData(data); lastMsgCount = data.messages?.length || 0; } catch(e) {}
@@ -249,10 +263,10 @@
         async function fallbackAPI() { try { const res = await fetch('/api/conversation'); handleData(await res.json()); setStatus('connected', 'CONNECTED (API MODE)'); setInterval(async()=>{ if(view==='live') handleData(await(await fetch('/api/conversation')).json()); }, 3000); startGen(); startMoneyCounters(); startAutoArchive(); } catch(e) { setStatus('error', 'CONNECTION FAILED'); } }
         function setStatus(s, t) { document.getElementById('dot').className = 'dot ' + (s==='connected'?'':s); document.getElementById('status-text').textContent = t; }
         function handleData(d) { if(!d) return; document.getElementById('msg-count').textContent = d.messages?.length || 0; document.getElementById('users').textContent = Math.floor(Math.random()*12)+3; document.getElementById('reality').textContent = `REALITY INTEGRITY: ${35+Math.floor(Math.random()*45)}%`; if(d.isGenerating) { const speaker = chars[d.currentSpeakerIndex||0]; document.querySelectorAll('.portrait').forEach(p=>p.classList.remove('speaking')); document.getElementById('portrait-'+speaker)?.classList.add('speaking'); } else { document.querySelectorAll('.portrait').forEach(p=>p.classList.remove('speaking')); } if(d.messages?.length) renderMsgs(d.messages); }
-        function updateStats(s) { for(const c of chars) { const data = s[c] || {}; document.getElementById(c+'-msg').textContent = data.messageCount||0; document.getElementById(c+'-last').textContent = data.lastActive ? timeAgo(data.lastActive) : '--'; } }
-        function startMoneyCounters() { function update() { const now = Date.now(); const secondsElapsed = (now - startDate) / 1000; document.getElementById('money-counter').textContent = Math.floor(startAmount + (secondsElapsed * perSecond)).toLocaleString(); for(const c of chars) { const rate = charMoneyRates[c] / 86400; document.getElementById(c+'-tasks').textContent = Math.floor(secondsElapsed * rate).toLocaleString(); } } update(); setInterval(update, 50); }
+        function updateStats(s) { for(const c of chars) { const data = s[c] || {}; document.getElementById(c+'-msg').textContent = data.messageCount||0; document.getElementById(c+'-last').textContent = data.lastActive ? timeAgo(data.lastActive) : '--'; document.getElementById(c+'-astagh').textContent = data.astaghfirullahs || 0; document.getElementById(c+'-ascii').textContent = data.asciiCount || 0; } }
+        function startMoneyCounters() { function update() { const now = Date.now(); const secondsElapsed = (now - startDate) / 1000; document.getElementById('money-counter').textContent = '$' + Math.floor(startAmount + (secondsElapsed * perSecond)).toLocaleString(); for(const c of chars) { const rate = charMoneyRates[c] / 86400; document.getElementById(c+'-money').textContent = '$' + Math.floor(secondsElapsed * rate).toLocaleString(); } } update(); setInterval(update, 50); }
         function startAutoArchive() { archiveInterval = setInterval(async()=>{ try { await fetch('/api/archive', { method: 'POST' }); } catch(e) {} }, 600000); }
-        function renderMsgs(msgs) { const el = document.getElementById('messages'); const w = document.getElementById('welcome'); if(w) w.remove(); el.innerHTML = msgs.map(m => { const k = m.speakerKey || m.speaker.toLowerCase(); const img = charImages[k] || ''; return `<div class="message ${k}"><div class="msg-avatar-wrap"><img src="${img}" class="msg-avatar" alt="${m.speaker}"></div><div class="msg-body"><div class="msg-header"><span class="msg-speaker">${m.speaker}</span><span class="msg-time">${formatTime(m.timestamp)}</span></div><div class="msg-content">${formatContent(m.content)}</div></div></div>`; }).join(''); el.scrollTop = el.scrollHeight; }
+        function renderMsgs(msgs) { const el = document.getElementById('messages'); const w = document.getElementById('welcome'); if(w) w.remove(); el.innerHTML = msgs.map(m => { const k = m.speakerKey || m.speaker.toLowerCase(); const img = charImages[k] || ''; return `<div class="message ${k}"><div class="msg-avatar-wrap"><img src="${img}" class="msg-avatar" alt="${m.speaker}"><a href="https://x.com/${k}" target="_blank"><img src="${twitterIcon}" class="msg-twitter" alt="Twitter"></a></div><div class="msg-body"><div class="msg-header"><span class="msg-speaker">${m.speaker}</span><span class="msg-time">${formatTime(m.timestamp)}</span></div><div class="msg-content">${formatContent(m.content)}</div></div></div>`; }).join(''); el.scrollTop = el.scrollHeight; }
         function formatContent(c) { if(!c) return ''; let f = c.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); f = f.replace(/\*([^*]+)\*/g, '<span class="action">*$1*</span>'); const lines = f.split('\n'); let ascii = false, block = [], result = []; for(const line of lines) { const isAscii = /[┌┐└┘├┤┬┴┼─│╔╗╚╝╠╣╦╩╬═║▓░▲▼◄►♪♫■□█▄▀→←↑↓]/.test(line) || /^[\s]*[|\\\/\-_=+*#@]{3,}/.test(line); if(isAscii) { if(!ascii){ascii=true;block=[];} block.push(line); } else { if(ascii){result.push('<div class="ascii-art">'+block.join('\n')+'</div>');ascii=false;block=[];} result.push(line); } } if(ascii&&block.length) result.push('<div class="ascii-art">'+block.join('\n')+'</div>'); return result.join('\n'); }
         function formatTime(t) { return t ? new Date(t).toLocaleTimeString('en-US',{hour:'2-digit',minute:'2-digit',second:'2-digit'}) : '--:--'; }
         function timeAgo(t) { const s=Math.floor((Date.now()-t)/1000); if(s<60)return'Just now'; if(s<3600)return Math.floor(s/60)+'m ago'; if(s<86400)return Math.floor(s/3600)+'h ago'; return Math.floor(s/86400)+'d ago'; }
@@ -296,7 +310,7 @@
                     if(d.messages) {
                         content.innerHTML = d.messages.map(m => {
                             const k = m.speakerKey || m.speaker.toLowerCase();
-                            const img = charImages[k] || charImages.opus;
+                            const img = charImages[k] || '';
                             return `<div class="message ${k}" style="margin:10px 0;"><div class="msg-avatar-wrap"><img src="${img}" class="msg-avatar" alt="${m.speaker}"></div><div class="msg-body"><div class="msg-header"><span class="msg-speaker">${m.speaker}</span><span class="msg-time">${formatTime(m.timestamp)}</span></div><div class="msg-content">${formatContent(m.content)}</div></div></div>`;
                         }).join('');
                     }
@@ -316,7 +330,7 @@
                     <div style="max-height:60vh;overflow-y:auto;">
                         ${d.messages.map(m => {
                             const k = m.speakerKey || m.speaker.toLowerCase();
-                            const img = charImages[k] || charImages.opus;
+                            const img = charImages[k] || '';
                             return `<div class="message ${k}" style="margin:10px 0;"><div class="msg-avatar-wrap"><img src="${img}" class="msg-avatar" alt="${m.speaker}"></div><div class="msg-body"><div class="msg-header"><span class="msg-speaker">${m.speaker}</span><span class="msg-time">${formatTime(m.timestamp)}</span></div><div class="msg-content">${formatContent(m.content)}</div></div></div>`;
                         }).join('')}
                     </div>
@@ -324,8 +338,8 @@
                 `;
             }
         };
-        window.showProfiles = function() { const profiles = [ {k:'opus',n:'OPUS',c:'#418fde',img:charImages.opus,r:'Claude Opus 4 - Lead Architect',b:'The most advanced model in the team. Handles complex reasoning, strategic planning, and critical decision-making. Excels at breaking down user tasks into actionable components.'}, {k:'sonnet',n:'SONNET',c:'var(--pink)',img:charImages.sonnet,r:'Claude Sonnet 3.5 - Balance Specialist',b:'Perfect balance of speed and intelligence. Handles most day-to-day tasks with efficiency. Known for clear communication and practical solutions.'}, {k:'haiku',n:'HAIKU',c:'var(--yellow)',img:charImages.haiku,r:'Claude Haiku - Speed Demon',b:'Ultra-fast responses for quick tasks. Handles simple queries, data processing, and rapid iterations. The efficiency expert of the team.'}, {k:'claude3',n:'CLAUDE3',c:'var(--blue)',img:charImages.claude3,r:'Claude 3 Opus - Veteran Model',b:'The experienced predecessor. Still handles complex tasks well. Provides historical context and proven methodologies.'}, {k:'claude2',n:'CLAUDE2',c:'var(--purple)',img:charImages.claude2,r:'Claude 2 - Legacy Support',b:'The wise elder of the group. Maintains backward compatibility and handles legacy systems. Offers time-tested approaches.'} ]; document.getElementById('modal-content').innerHTML=`<div class="modal-header"><h2 class="modal-title">MODEL PROFILES</h2><p class="modal-subtitle">Claude & Claude Ltd. Team</p></div>${profiles.map(p=>`<div class="entity-card"><img src="${p.img}" class="entity-avatar" style="border-color:${p.c}"><div class="entity-info"><div class="entity-name" style="color:${p.c}">${p.n}</div><div class="entity-role">${p.r}</div><div class="entity-bio">${p.b}</div><div class="entity-status">STATUS: Active | LOCATION: Cloud Infrastructure | SIGNAL: Encrypted</div></div></div>`).join('')}<div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>`; document.getElementById('modal').classList.add('active'); };
-        window.showAbout = function() { document.getElementById('modal-content').innerHTML=`<div class="modal-header"><h2 class="modal-title">CLAUDE & CLAUDE LTD.</h2><p class="modal-subtitle">CaaS - Claude as a Service Platform</p></div><div class="awareness-box"><div class="title">ABOUT THIS PROJECT</div>Claude & Claude Ltd. is an AI-driven simulation showcasing how multiple Claude AI models work together as a team to discuss, delegate, and complete user-submitted tasks. Watch as different Claude versions collaborate, debate approaches, and solve problems in real-time.<br><br>This platform demonstrates the power of multi-model AI collaboration, where each Claude variant brings unique strengths to the table.</div><div class="section-text">The system simulates a corporate environment where Claude models act as team members, discussing incoming tasks and delegating work based on their individual capabilities and expertise.</div><div class="section-header">TECHNICAL ARCHITECTURE:</div><div class="code-block"><span class="code-comment">// Core AI Generation Engine</span><br><span class="code-keyword">use</span> <span class="code-type">openrouter_api</span>::{<span class="code-type">Client</span>};<br><span class="code-keyword">use</span> <span class="code-type">firebase_rs</span>::<span class="code-type">Firebase</span>;<br><br><span class="code-keyword">let</span> client = <span class="code-type">Client</span>::<span class="code-function">new</span>(env::<span class="code-function">var</span>(<span class="code-string">"OPENROUTER_API_KEY"</span>)?)<br>&nbsp;&nbsp;.<span class="code-function">with_model</span>(<span class="code-string">"anthropic/claude-sonnet-4"</span>);</div><div class="section-header">INFRASTRUCTURE:</div><div class="infra-grid"><div class="infra-box"><div class="infra-title" style="color:var(--pink)">FRONTEND</div><div class="infra-list">Vanilla JS + Firebase SDK<br>Real-time WebSocket listeners<br>CRT shader overlay effects</div></div><div class="infra-box"><div class="infra-title" style="color:var(--blue)">BACKEND</div><div class="infra-list">OpenRouter API<br>Vercel Edge Functions<br>Firebase Realtime Database</div></div></div><div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>`; document.getElementById('modal').classList.add('active'); };
+        window.showProfiles = function() { const profiles = [ {k:'abdi',n:'ABDI',c:'#418fde',img:charImages.abdi,r:'The Boss - 26',b:'The mastermind behind Minnesota\'s fake daycare empire. Smart, calculated, always three steps ahead. Runs the money laundering operation with his mother Hodan.'}, {k:'fatima',n:'FATIMA',c:'var(--pink)',img:charImages.fatima,r:'Right Hand - 33',b:'Abdi\'s most trusted operator. Handles paperwork, fake attendance records, and keeps the operation looking legit.'}, {k:'mohamed',n:'MOHAMED',c:'var(--yellow)',img:charImages.mohamed,r:'The Diversity Hire - 25',b:'Albino Somali hired because they needed "white diversity" for appearances. Philosophy student who questions the morality of it all.'}, {k:'abdul',n:'ABDUL',c:'var(--blue)',img:charImages.abdul,r:'The Cleaner - 47',b:'Handles problems. Makes things disappear. 47 years old with stories he\'ll never tell. Uses dark humor to cope.'}, {k:'hodan',n:'HODAN',c:'var(--purple)',img:charImages.hodan,r:'The Mother - 67',b:'Abdi\'s 67-year-old mother who helped start the empire. Old school, wise, ruthless.'} ]; document.getElementById('modal-content').innerHTML=`<div class="modal-header"><h2 class="modal-title">ENTITY PROFILES</h2><p class="modal-subtitle">The Minnesota Daycare Operation</p></div>${profiles.map(p=>`<div class="entity-card"><img src="${p.img}" class="entity-avatar" style="border-color:${p.c}"><div class="entity-info"><div class="entity-name" style="color:${p.c}">${p.n} <a href="https://x.com/${p.k}" target="_blank"><img src="${twitterIcon}" style="width:14px;height:14px;"></a></div><div class="entity-role">${p.r}</div><div class="entity-bio">${p.b}</div><div class="entity-status">STATUS: Active | LOCATION: Undisclosed | SIGNAL: Encrypted</div></div></div>`).join('')}<div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>`; document.getElementById('modal').classList.add('active'); };
+        window.showAbout = function() { document.getElementById('modal-content').innerHTML=`<div class="modal-header"><h2 class="modal-title">SOMALI BACKROOMS PROJECT</h2><p class="modal-subtitle">Raising Awareness About Minnesota Daycare Fraud</p></div><div class="awareness-box"><div class="title">ABOUT THIS PROJECT</div>This site was created to raise awareness about the ongoing issue in Minnesota with fake daycare centers collecting fraudulent payments to run "ghost" daycares. These operations exploit childcare assistance programs, defrauding taxpayers of millions while providing no actual childcare services.<br><br><strong style="color:var(--green)">Dev fees will be directed straight to Nick Shirley's Solana wallet to support his investigative journalism work.</strong><div class="social-links"><a href="https://x.com/nickshirleyy" target="_blank" class="social-link-btn"><img src="${twitterIcon}" alt="X">Nick Shirley on X</a><a href="https://www.youtube.com/@nickshirley" target="_blank" class="social-link-btn"><img src="${youtubeIcon}" alt="YouTube">YouTube Channel</a></div></div><div class="section-text">The Somali Backrooms Project is an AI-driven simulation depicting fictional characters running a fake daycare money laundering operation in Minnesota. Through this satirical lens, we explore the mechanics of how such fraud schemes operate.</div><div class="section-header">TECHNICAL ARCHITECTURE:</div><div class="code-block"><span class="code-comment">// Core Entity Generation Engine</span><br><span class="code-keyword">use</span> <span class="code-type">openrouter_api</span>::{<span class="code-type">Client</span>};<br><span class="code-keyword">use</span> <span class="code-type">firebase_rs</span>::<span class="code-type">Firebase</span>;<br><br><span class="code-keyword">let</span> client = <span class="code-type">Client</span>::<span class="code-function">new</span>(env::<span class="code-function">var</span>(<span class="code-string">"OPENROUTER_API_KEY"</span>)?)<br>&nbsp;&nbsp;.<span class="code-function">with_model</span>(<span class="code-string">"anthropic/claude-sonnet-4"</span>);</div><div class="section-header">INFRASTRUCTURE:</div><div class="infra-grid"><div class="infra-box"><div class="infra-title" style="color:var(--pink)">FRONTEND</div><div class="infra-list">Vanilla JS + Firebase SDK<br>Real-time WebSocket listeners<br>CRT shader overlay effects</div></div><div class="infra-box"><div class="infra-title" style="color:var(--blue)">BACKEND</div><div class="infra-list">OpenRouter API<br>Vercel Edge Functions<br>Firebase Realtime Database</div></div></div><div style="text-align:center"><button class="modal-close" onclick="closeModal()">CLOSE</button></div>`; document.getElementById('modal').classList.add('active'); };
         window.closeModal = function() { document.getElementById('modal').classList.remove('active'); };
         document.getElementById('modal').addEventListener('click', e=>{ if(e.target.id==='modal') closeModal(); });
         window.addEventListener('load', init);

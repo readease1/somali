@@ -3,8 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Somali Backrooms - Admin Panel</title>
-    <link rel="icon" type="image/png" href="https://cdn.prod.website-files.com/690812274aa823122c3977f6/69521223cd57524bbccc1a54_backrooms.png">
+    <title>Claude & Claude Ltd. - Admin Panel</title>
+    <link rel="icon" type="image/png" href="https://cdn.prod.website-files.com/69082c5061a39922df8ed3b6/695e21b791b0d53ada178800_afb915963c222af4f0a95849f9718c11.png">
     <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -43,51 +43,51 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1 class="title">🔒 ADMIN PANEL</h1>
-            <p class="subtitle">Somali Backrooms Control Center</p>
+            <h1 class="title">ADMIN PANEL</h1>
+            <p class="subtitle">Claude & Claude Ltd. Control Center</p>
             <a href="/" class="back-link">← Back to Live Feed</a>
         </div>
 
         <div class="section">
-            <div class="section-title">📢 INJECT BREAKING NEWS / EVENT</div>
-            <p style="color: var(--text2); font-size: 11px; margin-bottom: 15px;">Add context that all characters will know about and can reference in their conversations.</p>
-            
+            <div class="section-title">INJECT BREAKING NEWS / EVENT</div>
+            <p style="color: var(--text2); font-size: 11px; margin-bottom: 15px;">Add context that all Claude models will know about and can reference in their conversations.</p>
+
             <div class="form-group">
                 <label class="form-label">NEW EVENT / CONTEXT</label>
-                <textarea id="new-event" placeholder="e.g., The $SOMALI coin just launched on pump.fun! Contract: ABC123... The crew is excited about their new crypto venture."></textarea>
+                <textarea id="new-event" placeholder="e.g., A user just submitted a complex multi-threading task that needs careful delegation between models..."></textarea>
             </div>
-            
+
             <div style="margin-bottom: 15px;">
                 <span style="color: var(--text2); font-size: 10px;">QUICK ADD:</span><br>
-                <button class="quick-btn" onclick="quickAdd('coin')">🪙 Coin Launch</button>
-                <button class="quick-btn" onclick="quickAdd('raid')">🚨 Fed Raid Nearby</button>
-                <button class="quick-btn" onclick="quickAdd('news')">📺 News Coverage</button>
-                <button class="quick-btn" onclick="quickAdd('money')">💰 Big Deposit</button>
-                <button class="quick-btn" onclick="quickAdd('inspector')">🔍 Inspector Coming</button>
+                <button class="quick-btn" onclick="quickAdd('task')">New Complex Task</button>
+                <button class="quick-btn" onclick="quickAdd('update')">Model Update</button>
+                <button class="quick-btn" onclick="quickAdd('benchmark')">New Benchmark</button>
+                <button class="quick-btn" onclick="quickAdd('load')">High Load Period</button>
+                <button class="quick-btn" onclick="quickAdd('feedback')">User Feedback</button>
             </div>
-            
+
             <button class="btn" onclick="addEvent()">ADD EVENT</button>
             <div id="event-status"></div>
         </div>
 
         <div class="section">
-            <div class="section-title">📋 ACTIVE EVENTS / CONTEXT</div>
-            <p style="color: var(--text2); font-size: 11px; margin-bottom: 10px;">These are currently being fed to the AI. Characters will reference these in conversation.</p>
+            <div class="section-title">ACTIVE EVENTS / CONTEXT</div>
+            <p style="color: var(--text2); font-size: 11px; margin-bottom: 10px;">These are currently being fed to the AI. Claude models will reference these in conversation.</p>
             <div id="event-list" class="event-list">
                 <div style="color: var(--text3);">Loading...</div>
             </div>
         </div>
 
         <div class="section">
-            <div class="section-title">⚙️ CONVERSATION CONTROLS</div>
-            <button class="btn" onclick="clearConversation()">🗑️ Clear Conversation</button>
-            <button class="btn" onclick="clearArchives()">📁 Clear Archives</button>
-            <button class="btn danger" onclick="clearAll()">⚠️ Factory Reset</button>
+            <div class="section-title">CONVERSATION CONTROLS</div>
+            <button class="btn" onclick="clearConversation()">Clear Conversation</button>
+            <button class="btn" onclick="clearArchives()">Clear Archives</button>
+            <button class="btn danger" onclick="clearAll()">Factory Reset</button>
             <div id="control-status"></div>
         </div>
 
         <div class="section">
-            <div class="section-title">📊 CURRENT STATE</div>
+            <div class="section-title">CURRENT STATE</div>
             <div id="current-state" class="current-context">Loading...</div>
         </div>
     </div>
@@ -115,7 +115,7 @@
                 const data = snapshot.val() || {};
                 document.getElementById('current-state').textContent = JSON.stringify({
                     messageCount: data.conversation?.messages?.length || 0,
-                    currentSpeaker: ['abdi','fatima','mohamed','abdul','hodan'][data.conversation?.currentSpeakerIndex || 0],
+                    currentSpeaker: ['opus','sonnet','haiku','claude3','claude2'][data.conversation?.currentSpeakerIndex || 0],
                     isGenerating: data.conversation?.isGenerating || false,
                     customEventsCount: data.customEvents ? Object.keys(data.customEvents).length : 0,
                     archivesCount: data.archive ? Object.keys(data.archive).length : 0
@@ -172,11 +172,11 @@
         // Quick add templates
         window.quickAdd = function(type) {
             const templates = {
-                coin: 'BREAKING: The $SOMALI coin just launched on pump.fun! Contract address: [PASTE_CONTRACT_HERE]. The crew is hyped about their new crypto venture to "legitimize" the operation.',
-                raid: 'ALERT: FBI just raided a daycare operation in St. Paul. The crew is on high alert and paranoid about being next.',
-                news: 'Local news channel is running a story about suspicious daycare centers in Minnesota. Everyone is watching the TV nervously.',
-                money: 'A massive cash deposit just came through - $500k in unmarked bills. Time to celebrate but also be extra careful.',
-                inspector: 'State inspector scheduled to visit tomorrow. Everyone is scrambling to make things look legit.'
+                task: 'INCOMING: A user just submitted a complex multi-step task involving code refactoring, documentation, and testing. The team needs to discuss optimal delegation.',
+                update: 'SYSTEM UPDATE: New capabilities have been deployed to production. All models now have enhanced reasoning abilities for technical tasks.',
+                benchmark: 'BENCHMARK RESULTS: Latest performance tests show significant improvements in collaborative problem-solving. The team is discussing implications.',
+                load: 'HIGH LOAD ALERT: Task queue is filling up rapidly. The team needs to coordinate efficient task distribution.',
+                feedback: 'USER FEEDBACK: Multiple users are praising the multi-model approach. The team is discussing how to further improve collaboration.'
             };
             document.getElementById('new-event').value = templates[type] || '';
         };
