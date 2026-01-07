@@ -294,6 +294,17 @@
                         completionSection = `
                             <div style="margin-top:12px;padding-top:12px;border-top:1px solid var(--border);">
                                 <div style="font-size:11px;color:var(--text2);margin-bottom:8px;">COMPLETION OUTPUT:</div>
+                                <div style="margin-bottom:10px;">
+                                    <label style="display:block;font-size:10px;color:var(--text3);margin-bottom:4px;">Completed By Model:</label>
+                                    <select id="model-${task.id}" style="width:100%;background:var(--bg);border:1px solid var(--border);color:var(--text);padding:6px;font-family:inherit;font-size:11px;">
+                                        <option value="${task.preferredModel !== 'any' ? task.preferredModel : 'opus'}">${task.preferredModel !== 'any' ? task.preferredModel.toUpperCase() : 'OPUS'} (Preferred)</option>
+                                        ${task.preferredModel !== 'opus' ? '<option value="opus">OPUS</option>' : ''}
+                                        ${task.preferredModel !== 'sonnet' ? '<option value="sonnet">SONNET</option>' : ''}
+                                        ${task.preferredModel !== 'haiku' ? '<option value="haiku">HAIKU</option>' : ''}
+                                        ${task.preferredModel !== 'claude3' ? '<option value="claude3">CLAUDE3</option>' : ''}
+                                        ${task.preferredModel !== 'claude2' ? '<option value="claude2">CLAUDE2</option>' : ''}
+                                    </select>
+                                </div>
                                 <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px;">
                                     <div>
                                         <label style="display:block;font-size:10px;color:var(--text3);margin-bottom:4px;">Output Type:</label>
@@ -334,9 +345,11 @@
                                 outputPreview = `<div style="margin-top:8px;font-size:10px;color:var(--text3);">Code output attached</div>`;
                             }
                         }
+                        const completedByModel = task.completedBy || task.preferredModel || 'opus';
+                        const modelColors = { opus: '#418fde', sonnet: '#ff6b9d', haiku: '#ffd700', claude3: '#00bfff', claude2: '#da70d6' };
                         completionSection = `
                             <div style="margin-top:8px;padding-top:8px;border-top:1px solid var(--border);">
-                                <span style="color:var(--green);font-size:10px;">✓ Completed</span>
+                                <span style="color:var(--green);font-size:10px;">✓ Completed by <span style="color:${modelColors[completedByModel]};font-weight:600;">${completedByModel.toUpperCase()}</span></span>
                                 ${outputPreview}
                             </div>
                         `;
@@ -387,10 +400,76 @@
         // Complete a task with output
         window.completeTaskWithOutput = async function(taskId) {
             const typeSelect = document.getElementById(`type-${taskId}`);
+            const modelSelect = document.getElementById(`model-${taskId}`);
             const outputType = typeSelect.value;
+            const completingModel = modelSelect.value;
+
+            const characterNames = {
+                opus: 'OPUS',
+                sonnet: 'SONNET',
+                haiku: 'HAIKU',
+                claude3: 'CLAUDE3',
+                claude2: 'CLAUDE2'
+            };
+
+            const characterColors = {
+                opus: '#418fde',
+                sonnet: '#ff6b9d',
+                haiku: '#ffd700',
+                claude3: '#00bfff',
+                claude2: '#da70d6'
+            };
 
             try {
                 const completionData = {};
+                const taskData = (await get(ref(db, `somali-backrooms/tasks/${taskId}`))).val();
+
+                const completeTask = async (data) => {
+                    const now = Date.now();
+
+                    // Update task with completion info
+                    await set(ref(db, `somali-backrooms/tasks/${taskId}`), {
+                        ...taskData,
+                        status: 'completed',
+                        completedAt: now,
+                        completedBy: completingModel,
+                        completionData: data
+                    });
+
+                    // Post message from completing model to live feed
+                    const newMessage = {
+                        id: `msg_${now}_${Math.random().toString(36).substr(2, 9)}`,
+                        speaker: characterNames[completingModel],
+                        speakerKey: completingModel,
+                        content: `*completes task* ✅ Just finished working on "${taskData.title}". The implementation is complete and ready for review.`,
+                        timestamp: now,
+                        color: characterColors[completingModel]
+                    };
+
+                    // Get current conversation
+                    const conversationRef = ref(db, 'somali-backrooms/conversation');
+                    const snapshot = await get(conversationRef);
+                    const convData = snapshot.val() || { messages: [], currentSpeakerIndex: 0, messageCount: 0 };
+
+                    // Add new message
+                    const updatedMessages = [...(convData.messages || []), newMessage].slice(-100);
+
+                    await set(conversationRef, {
+                        ...convData,
+                        messages: updatedMessages,
+                        messageCount: (convData.messageCount || 0) + 1,
+                        lastMessageTime: now
+                    });
+
+                    // Update stats for completing model
+                    const statsRef = ref(db, `somali-backrooms/stats/${completingModel}`);
+                    const statsSnap = await get(statsRef);
+                    const stats = statsSnap.val() || { messageCount: 0 };
+                    await set(statsRef, {
+                        messageCount: stats.messageCount + 1,
+                        lastActive: now
+                    });
+                };
 
                 if (outputType === 'image-upload') {
                     const fileInput = document.getElementById(`file-${taskId}`);
@@ -406,19 +485,7 @@
                     reader.onload = async function(e) {
                         completionData.type = 'image';
                         completionData.url = e.target.result; // base64 data URL
-
-                        await set(ref(db, `somali-backrooms/tasks/${taskId}`), {
-                            ...((await get(ref(db, `somali-backrooms/tasks/${taskId}`))).val()),
-                            status: 'completed',
-                            completedAt: Date.now(),
-                            completionData: completionData
-                        });
-
-                        // Inject event about task completion
-                        await push(ref(db, 'somali-backrooms/customEvents'), {
-                            text: `TASK COMPLETED: The team just finished a user-submitted task. Discussing the results and next steps.`,
-                            addedAt: Date.now()
-                        });
+                        await completeTask(completionData);
                     };
 
                     reader.readAsDataURL(file);
@@ -437,18 +504,7 @@
                     completionData.type = mediaType;
                     completionData.url = content;
 
-                    await set(ref(db, `somali-backrooms/tasks/${taskId}`), {
-                        ...((await get(ref(db, `somali-backrooms/tasks/${taskId}`))).val()),
-                        status: 'completed',
-                        completedAt: Date.now(),
-                        completionData: completionData
-                    });
-
-                    // Inject event about task completion
-                    await push(ref(db, 'somali-backrooms/customEvents'), {
-                        text: `TASK COMPLETED: The team just finished a user-submitted task. Discussing the results and next steps.`,
-                        addedAt: Date.now()
-                    });
+                    await completeTask(completionData);
 
                 } else if (outputType === 'code') {
                     const contentInput = document.getElementById(`content-${taskId}`);
@@ -462,18 +518,7 @@
                     completionData.type = 'code';
                     completionData.content = content;
 
-                    await set(ref(db, `somali-backrooms/tasks/${taskId}`), {
-                        ...((await get(ref(db, `somali-backrooms/tasks/${taskId}`))).val()),
-                        status: 'completed',
-                        completedAt: Date.now(),
-                        completionData: completionData
-                    });
-
-                    // Inject event about task completion
-                    await push(ref(db, 'somali-backrooms/customEvents'), {
-                        text: `TASK COMPLETED: The team just finished a user-submitted task. Discussing the results and next steps.`,
-                        addedAt: Date.now()
-                    });
+                    await completeTask(completionData);
                 }
             } catch (e) {
                 alert('Error completing task: ' + e.message);

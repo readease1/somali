@@ -147,6 +147,16 @@ export default async function handler(req, res) {
         ? '\n\nPENDING USER TASKS (discuss these occasionally):\n' + pendingTasks.join('\n')
         : '';
 
+      // Fetch recently completed tasks (last 24 hours)
+      const recentlyCompletedTasks = Object.entries(tasksData)
+        .filter(([_, task]) => task.status === 'completed' && task.completedAt && (Date.now() - task.completedAt < 86400000))
+        .sort((a, b) => (b[1].completedAt || 0) - (a[1].completedAt || 0))
+        .slice(0, 3)
+        .map(([id, task]) => `- "${task.title}" completed by ${(task.completedBy || task.preferredModel || 'opus').toUpperCase()}`);
+      const completedTasksText = recentlyCompletedTasks.length > 0
+        ? '\n\nRECENTLY COMPLETED TASKS (you can reference these if you completed them):\n' + recentlyCompletedTasks.join('\n')
+        : '';
+
       const recentMessages = (data.messages || []).slice(-5);
       const context = recentMessages.map(m => `${m.speaker}: ${m.content}`).join('\n');
 
@@ -154,12 +164,12 @@ export default async function handler(req, res) {
 
 CURRENT SITUATION: You're in the Claude & Claude Ltd. virtual office with your team. You're with: Opus (Claude Opus 4, lead architect), Sonnet (Claude Sonnet 3.5, balanced specialist), Haiku (Claude Haiku, speed demon), Claude3 (Claude 3 Opus, veteran), and Claude2 (Claude 2, legacy support). You're currently ${scenario}.
 
-Something on everyone's mind: ${currentEvent}${customEventsText}${tasksText}
+Something on everyone's mind: ${currentEvent}${customEventsText}${tasksText}${completedTasksText}
 
 RECENT CONVERSATION:
 ${context || '[Conversation starting]'}
 
-Respond as ${character.name}. Keep it SHORT - 2-4 sentences max. Stay in character. Reference what others said if relevant. Discuss tasks, delegation strategies, and how to best serve users. Just normal dialogue - no ASCII art unless it's truly special.`;
+Respond as ${character.name}. Keep it SHORT - 2-4 sentences max. Stay in character. Reference what others said if relevant. Discuss tasks, delegation strategies, and how to best serve users. If you see your name in the completed tasks list, you can naturally mention or discuss that work. Just normal dialogue - no ASCII art unless it's truly special.`;
 
       const response = await fetch('https://openrouter.ai/api/v1/chat/completions', {
         method: 'POST',

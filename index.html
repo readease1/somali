@@ -272,10 +272,11 @@
                 const completedTasks = Object.values(tasks).filter(t => t.status === 'completed');
                 totalTasksCompleted = completedTasks.length;
 
-                // Count tasks per model
+                // Count tasks per model based on who actually completed them
                 for(const c of chars) { modelTaskCounts[c] = 0; }
                 completedTasks.forEach(task => {
-                    const model = task.preferredModel;
+                    // Use completedBy field if available, otherwise fall back to preferredModel
+                    const model = task.completedBy || task.preferredModel;
                     if (model && model !== 'any' && modelTaskCounts[model] !== undefined) {
                         modelTaskCounts[model]++;
                     }
